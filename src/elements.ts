@@ -1,7 +1,7 @@
 export type Trigger = string | string[];
 
 export interface Element {
-  tag: string;
+  tag: string;  
   attributes?: any;
   content?: any[];
 }
@@ -26,6 +26,24 @@ export function el(
     attributes: attributesOrElement,
     content: content
   };
+}
+
+export interface Project extends Element {};
+export interface Component extends Element {};
+
+export interface ProjectAttributes {
+  name: string;
+  components: Component[]
+}
+export function project(attributes: ProjectAttributes): Project {
+  return el("project", attributes)
+}
+
+export interface ComponentAttributes {
+  name: string;  
+}
+export function component(attributes: ComponentAttributes, ...content: Content[]): Component {
+  return el("component", attributes, ...content);
 }
 
 // Dynamic Element (form generation)  
