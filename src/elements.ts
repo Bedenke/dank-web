@@ -41,6 +41,7 @@ export function project(attributes: ProjectAttributes): Project {
 
 export interface ComponentAttributes {
   name: string;  
+  description?: string;
 }
 export function component(attributes: ComponentAttributes, ...content: Content[]): Component {
   return el("component", attributes, ...content);

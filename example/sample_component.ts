@@ -11,17 +11,14 @@ import {
   b,
   i,
   $,
-  component,
-  project
+  component
 } from "../src/elements";
+import SampleElement from "./sample_element";
 
-const MyElement = (title: string) => {
-  return div(h1(title + " is a beatle"));
-};
-
-const sample = component(
+export default component(
   {
-    name: "Sample Component"
+    name: "Sample Component",
+    description: "A component can be used multiple times in a project"
   },
   html(
     head(title("Hello World")),
@@ -32,8 +29,10 @@ const sample = component(
         { id: "my-id", class: "hello" },
         h3({ class: "blink" }, "Wow!"),
         [span("Foo"), b("Bar"), i("Far")],
-        MyElement("My title"),
-        ["Paul", "George", "John", "Ringo"].map(MyElement),
+        SampleElement({ title: "My title", type: "type1" }),
+        ["Paul", "George", "John", "Ringo"].map(beatle =>
+          SampleElement({ title: beatle, type: "type2" })
+        ),
         $("This is a dynamic element", {
           id: "test.dynamic",
           label: "Dynamic Element"
@@ -42,8 +41,3 @@ const sample = component(
     )
   )
 );
-
-export default project({
-  name: "Project name",
-  components: [sample]
-});
