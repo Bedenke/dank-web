@@ -86,12 +86,14 @@ export interface ElementProperties {
   attributes: any;
   children: Element[];
 }
-export function $on(trigger: Trigger, render: (ctx: any, props: ElementProperties) => Content): Element {
+export interface $SubscribeProperties {
+  element: Element,
+  on: Trigger,
+  render: (ctx: any, props: ElementProperties) => Content
+}
+export function $subscribe(attributes: $SubscribeProperties): Element {
   return {
-    tag: "$on",
-    attributes: {
-      trigger: trigger,
-      render: render
-    }
+    tag: "$subscribe",
+    attributes: attributes
   }
 }

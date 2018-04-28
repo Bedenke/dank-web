@@ -2,7 +2,7 @@ import {
   $component,
   $let,
   $children,
-  $on,
+  $subscribe,
   html,
   head,
   title,
@@ -31,10 +31,12 @@ export const Router = $component(
     description: "Simple navigation UI",
     allowedComponents: ["Route"]
   },
-  html(
-    $on("Router.Navigation", (ctx, props) => {
+  $subscribe({
+    element: html(),
+    on: "Router.Navigation",
+    render: (ctx, props) => {
       let routeTitle = "Oops! Page Not Found";
-      let content : Content = "PAGE NOT FOUND: " + ctx.request.path;
+      let content: Content = "PAGE NOT FOUND: " + ctx.request.path;
       for (let child of props.children) {
         let attributes = child.attributes;
         if (!attributes) continue;
@@ -44,6 +46,7 @@ export const Router = $component(
         }
       }
       return [head(title(routeTitle)), body(content)];
-    })
-  )
+    }
+  }),
+  $children()
 );
