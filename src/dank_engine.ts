@@ -84,7 +84,7 @@ export default class DankEngine {
       let element = content as Element;
 
       if (element.tag == "$let") {
-        return "$LET " + element.attributes!.id + " = " + element.content![0];
+        return node.attributes[element.attributes!.id] || element.content![0];
       }
       if (element.tag == "$children") {
         return childrenContent.length == 1 ? childrenContent[0] : childrenContent;
@@ -108,6 +108,15 @@ export default class DankEngine {
           element.content,
           childrenContent
         );
+      }
+
+      if (element.attributes) {
+        for (let key of Object.keys(element.attributes)) {
+          let attribute = element.attributes[key];
+          if (attribute.tag == "$let") {
+            element.attributes[key] = node.attributes[attribute.attributes!.id] || attribute.content![0];
+          }
+        }
       }
 
       return {
