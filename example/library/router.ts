@@ -8,7 +8,7 @@ import {
   title,
   body,
   Content
-} from "../../src/elements";
+} from "../../index";
 
 export const Route = $component(
   {

@@ -1,4 +1,4 @@
-import { $component, $let, img } from "../../src/elements";
+import { $component, $let, img } from "../../index";
 
 export const Image = $component(
   {

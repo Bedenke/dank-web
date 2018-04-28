@@ -1,4 +1,4 @@
-import { $component, $children, $let, footer } from "../../src/elements";
+import { $component, $children, $let, footer } from "../../index";
 
 export const Footer = $component(
   {

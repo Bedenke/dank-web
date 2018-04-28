@@ -1,4 +1,4 @@
-import { $component, $children, div } from "../../src/elements";
+import { $component, $children, div } from "../../index";
 
 export const Page = $component(
   {

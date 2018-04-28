@@ -1,4 +1,4 @@
-import { ul, li, a, $let, $children, $component } from "../../src/elements";
+import { ul, li, a, $let, $children, $component } from "../../index";
 
 export const NavigatorItem = $component(
   {

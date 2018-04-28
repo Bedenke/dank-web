@@ -1,4 +1,4 @@
-import { $library } from "../../src/elements";
+import { $library } from "../../index";
 import { Navigator, NavigatorItem } from "./navigator";
 import { Router, Route } from "./router";
 import { Footer } from "./footer";

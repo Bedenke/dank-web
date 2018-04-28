@@ -1,4 +1,4 @@
-import { $component, $children, div, $let, h1, h2 } from "../../src/elements";
+import { $component, $children, div, $let, h1, h2 } from "../../index";
 
 export const Hero = $component(
   {
