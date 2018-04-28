@@ -1,4 +1,4 @@
-import { h1, div } from "../src/elements";
+import { h1, div } from "../../src/elements";
 
 export interface SampleElementAttributes {
   title: string;

@@ -10,13 +10,14 @@ import {
   span,
   b,
   i,
-  $,
-  component
-} from "../src/elements";
+  $let,
+  $component
+} from "../../src/elements";
 import SampleElement from "./sample_element";
 
-export default component(
+export default $component(
   {
+    id: "sample_component",
     name: "Sample Component",
     description: "A component can be used multiple times in a project"
   },
@@ -33,8 +34,7 @@ export default component(
         ["Paul", "George", "John", "Ringo"].map(beatle =>
           SampleElement({ title: beatle, type: "type2" })
         ),
-        $("This is a dynamic element", {
-          id: "test.dynamic",
+        $let("dynamic", "This is a dynamic element", {
           label: "Dynamic Element"
         })
       )

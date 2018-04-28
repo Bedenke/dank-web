@@ -28,29 +28,31 @@ export function el(
   };
 }
 
-export interface Project extends Element {};
+export interface Library extends Element {};
 export interface Component extends Element {};
 
-export interface ProjectAttributes {
+export interface LibraryAttributes {
+  id: string;
   name: string;
   components: Component[]
 }
-export function project(attributes: ProjectAttributes): Project {
-  return el("project", attributes)
+export function $library(attributes: LibraryAttributes): Library {
+  return el("$library", attributes)
 }
 
 export interface ComponentAttributes {
+  id: string;
   name: string;  
   description?: string;
+  allowedComponents?: string[] | boolean;
 }
-export function component(attributes: ComponentAttributes, ...content: Content[]): Component {
-  return el("component", attributes, ...content);
+export function $component(attributes: ComponentAttributes, ...content: Content[]): Component {
+  return el("$component", attributes, ...content);
 }
 
 // Dynamic Element (form generation)  
 // https://github.com/formio/formio.js/wiki/Components-JSON-Schema
 export interface $Attributes {
-  id: string,
   label: string,
   type?: 'textfield' | 'textarea' | 'number' | 'email' | 'checkbox' | 'currency',
   placeholder?: string,
@@ -62,9 +64,40 @@ export interface $Attributes {
 
 export function $(defaultValue: string | number | boolean, attributes: $Attributes): Element {
   return {
-    tag: "$",
+    tag: "$attribute",
     attributes: attributes,
     content: [defaultValue]
+  }
+}
+
+export function $let(attributeName:string, defaultValue: string, attributes?: $Attributes): Element {
+  return {
+    tag: "$let",
+    attributes: {
+      id: attributeName,
+      ...attributes
+    },
+    content: [defaultValue]
+  }
+}
+
+export function $children(): Element {
+  return {
+    tag: "$children"
+  }
+}
+
+export interface ElementProperties {
+  attributes: any;
+  children: Element[];
+}
+export function $on(trigger: Trigger, render: (ctx: any, props: ElementProperties) => Content): Element {
+  return {
+    tag: "$on",
+    attributes: {
+      trigger: trigger,
+      render: render
+    }
   }
 }
 
@@ -95,7 +128,7 @@ export function head(...content: Content[]) {
 }
 
 //<title>
-export function title(content: string) {
+export function title(content: StringAttribute) {
   return el("title", undefined, content);
 }
 
