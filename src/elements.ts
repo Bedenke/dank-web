@@ -193,6 +193,11 @@ export function h3(attributes?: Attributes | Content, ...content: Content[]) {
   return el("h3", attributes, ...content);
 }
 
+//<footer>
+export function footer(attributes?: Attributes | Content, ...content: Content[]) {
+  return el("footer", attributes, ...content);
+}
+
 //<style>
 export function style(content: StyleAttribute) {
   if (typeof content == "function") {

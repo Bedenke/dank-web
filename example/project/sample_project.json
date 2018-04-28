@@ -23,7 +23,7 @@
           {
             "component": "Route",
             "attributes": {
-              "path": "/sample_page1",
+              "path": "/",
               "title": "My First Page"
             },
             "children": [

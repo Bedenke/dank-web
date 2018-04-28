@@ -13,7 +13,8 @@ export const Navigator = $component(
   {
     id: "Navigator",
     name: "Navigator",
-    description: "Simple navigation UI"
+    description: "Simple navigation UI",
+    allowedComponents: ["NavigatorItem"]
   },
   ul({ class: "navigator" }, $children())
 );

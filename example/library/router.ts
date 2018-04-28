@@ -1,5 +1,4 @@
 import {
-  div,
   $component,
   $let,
   $children,
@@ -7,7 +6,8 @@ import {
   html,
   head,
   title,
-  body
+  body,
+  Content
 } from "../../src/elements";
 
 export const Route = $component(
@@ -32,20 +32,18 @@ export const Router = $component(
     allowedComponents: ["Route"]
   },
   html(
-    div(
-      $on("Router.Navigation", (ctx, props) => {
-        let routeTitle = "Oops! Page Not Found";
-        let content = div("PAGE NOT FOUND: " + ctx.request.path);
-        for (let child of props.children) {
-          let attributes = child.attributes;
-          if (!attributes) continue;
-          if (attributes.path == ctx.request.path) {
-            content = child;
-            break;
-          }
+    $on("Router.Navigation", (ctx, props) => {
+      let routeTitle = "Oops! Page Not Found";
+      let content : Content = "PAGE NOT FOUND: " + ctx.request.path;
+      for (let child of props.children) {
+        let attributes = child.attributes;
+        if (!attributes) continue;
+        if (attributes.path == ctx.request.path) {
+          content = child;
+          break;
         }
-        return [head(title(routeTitle)), body(content)];
-      })
-    )
+      }
+      return [head(title(routeTitle)), body(content)];
+    })
   )
 );
