@@ -26,19 +26,25 @@ export type Content = string | BaseElement | BaseElement[]; // | ElementFunction
 
 export function el(
   tag: string,
-  attributesOrElement?: any,
+  attributesOrContent?: any,
   ...content: any[]
 ): BaseElement {
-  if (attributesOrElement && attributesOrElement.tag) {
+  if (typeof attributesOrContent == "object") {
+    if (attributesOrContent.tag) {
+      // Is element
+      return attributesOrContent;
+    }
+    // Is attribute
     return {
       tag: tag,
-      content: [attributesOrElement].concat(content || [])
+      attributes: attributesOrContent,
+      content: content
     };
   }
+  // Is content (string, number, array)
   return {
     tag: tag,
-    attributes: attributesOrElement,
-    content: content
+    content: [attributesOrContent].concat(content || [])
   };
 }
 

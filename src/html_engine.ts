@@ -20,7 +20,11 @@ export default class HtmlEngine {
   ): string {
     if (content instanceof Array) {
       let out = "";
-      content.map(node => (out += this.recurse(node, props, data)));
+      for (let child of content) {
+        if (child) {
+          out += this.recurse(child, props, data)
+        }
+      }
       return out;
     } else if (typeof content == "function") {
       let updated = (content as ElementFunction)(props, data);
@@ -77,8 +81,8 @@ export default class HtmlEngine {
         innerHTML = this.recurse(node.content, childProps, data);
       }
       return tagDefinition + innerHTML + "</" + node.tag + ">";
-    } else {
-      return content.toString();
+    } else { 
+      return (content || "").toString();
     }
   }
 }

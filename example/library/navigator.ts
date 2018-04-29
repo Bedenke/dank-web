@@ -47,8 +47,6 @@ export const Navigator = $component(
           }
         ],
         valueDecorator: input => {
-          console.log("valueDecorator ", input);
-          
           return input.map(NavigatorItem)
         }
       }
