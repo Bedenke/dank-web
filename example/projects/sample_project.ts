@@ -1,6 +1,13 @@
 export default {
   "id": "sample_project",
   "name": "Sample Project",
+  "global": {
+    "navigation":{
+      "links": [
+
+      ]
+    }
+  },
   "root": {
     "component": "Router",
     "children": [
@@ -8,7 +15,54 @@ export default {
         "component": "Route",
         "attributes": {
           "path": "/",
-          "title": "My First Page"
+          "title": "My First Dank Page"
+        },
+        "children": [
+          {
+            "component": "Page",
+            "children": [
+              {
+                "component": "Navigator",
+                "attributes": {
+                  "links": [
+                    { "label": "Sample Page 1", "url": "/sample_page1" },
+                    { "label": "Sample Page 2", "url": "/sample_page2" }
+                  ]
+                }
+              },
+              {
+                "component": "Hero",
+                "attributes": {
+                  "h1.title": "Main Title",
+                  "h2.title": "Subtitle"
+                }
+              },
+              {
+                "component": "Section",
+                "children": [
+                  {
+                    "component": "Image",
+                    "attributes": {
+                      "source": "../images/image1.png"
+                    }
+                  }
+                ]
+              },
+              {
+                "component": "Footer",
+                "attributes": {
+                  "about": "All the text in the footer"
+                }
+              }
+            ]
+          }
+        ]
+      }
+      ,{
+        "component": "Route",
+        "attributes": {
+          "path": "/second",
+          "title": "My Second Dank Page"
         },
         "children": [
           {
@@ -40,7 +94,7 @@ export default {
                   {
                     "component": "Image",
                     "attributes": {
-                      "source": "../images/image1.png"
+                      "source": "../images/image2.png"
                     }
                   }
                 ]

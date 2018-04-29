@@ -1,13 +1,20 @@
-import { ul, li, a, $let, $children, $component } from "../../index";
+import {
+  ul,
+  li,
+  a,
+  $let,
+  $children,
+  $component,
+  $subscribe
+} from "../../index";
 
-export const NavigatorItem = $component(
-  {
-    id: "NavigatorItem",
-    name: "Navigator Item",
-    description: "Each element of navigator"
-  },
-  li(a({ href: $let("url", "/default/url") }, $let("link", "Link Name")))
-);
+export interface NavigatorItemAttributes {
+  url: string;
+  label: string;
+}
+export function NavigatorItem(attributes: NavigatorItemAttributes) {
+  return li(a({ href: attributes.url }, attributes.label));
+}
 
 export const Navigator = $component(
   {
@@ -16,5 +23,35 @@ export const Navigator = $component(
     description: "Simple navigation UI",
     allowedComponents: ["NavigatorItem"]
   },
-  ul({ class: "navigator" }, $children())
+  ul(
+    { class: "navigator" },
+    $let(
+      "links",
+      {
+        links: [
+          { url: "/default/url1", label: "Link Name 1" },
+          { url: "/default/url2", label: "Link Name 2" }
+        ]
+      },
+      {
+        label: "Navigation Links",
+        type: "datagrid",
+        components: [
+          {
+            label: "Url",
+            key: "url"
+          },
+          {
+            label: "Label",
+            key: "label"
+          }
+        ],
+        valueDecorator: input => {
+          console.log("valueDecorator ", input);
+          
+          return input.map(NavigatorItem)
+        }
+      }
+    )
+  )
 );

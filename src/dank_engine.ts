@@ -1,5 +1,4 @@
 import {
-  Element,
   Content,
   ElementFunction,
   LibraryAttributes,
@@ -49,7 +48,11 @@ export default class DankEngine {
         childrenContent.push(this.recurse(child));
       }
     }
-    node.content = this.recurseContent(node, component.content, childrenContent);
+    node.content = this.recurseContent(
+      node,
+      component.content,
+      childrenContent
+    );
     return node.content;
   }
 
@@ -67,10 +70,29 @@ export default class DankEngine {
     }
 
     if (typeof content == "object") {
-      let element = content as Element;
+      let element = content as BaseElement;
 
       if (element.tag == "$let") {
-        return node.attributes[element.attributes!.id] || element.content![0];
+        if (!node.attributes) {
+          console.error("🔥 $let attributes is not defined for", node.component);
+          return [];
+        }
+        let letAttributes = element.attributes as $LetAttributes;
+        let value =
+          node.attributes[letAttributes.key!] ||
+          (element.content ? element.content[0] : undefined);
+        if (value == undefined) {
+          console.error(
+            "🔥 Value is not defined for",
+            letAttributes.key,
+            "on",
+            node.component
+          );
+          return [];
+        }
+        return letAttributes.valueDecorator
+          ? letAttributes.valueDecorator(value)
+          : value;
       }
       if (element.tag == "$children") {
         return childrenContent.length == 1

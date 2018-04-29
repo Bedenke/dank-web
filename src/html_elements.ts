@@ -1,11 +1,11 @@
-import { el, Content, Element } from "./elements";
+import { el, Content } from "./elements";
 
 // HTML elements
 
 export type AnyAttribute = any | (() => any);
 export type StyleAttribute = string | (() => string) | object | (() => object);
-export type StringAttribute = string | (() => string) | Element;
-export type NumberAttribute = number | (() => number) | Element;
+export type StringAttribute = string | (() => string) | BaseElement;
+export type NumberAttribute = number | (() => number) | BaseElement;
 
 // These are the global html attributes. If you extend this, your tag will inherit this. If not, make sure you extend only 'Attributes'.
 export interface Attributes {
@@ -40,7 +40,7 @@ export interface MetaAttributes extends Attributes {
 }
 export function meta(
   attributes?: MetaAttributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("meta", attributes, ...content);
 }
@@ -53,7 +53,7 @@ export interface LinkAttributes extends Attributes {
 }
 export function link(
   attributes?: LinkAttributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("link", attributes, ...content);
 }
@@ -77,7 +77,7 @@ export function span(attributes?: Attributes | Content, ...content: Content[]) {
 export function h1(
   attributes?: Attributes | Content,
   ...content: Content[]
-): Element {
+): BaseElement {
   return el("h1", attributes, ...content);
 }
 
@@ -136,7 +136,7 @@ export interface TextAreaAttributes extends Attributes {
 }
 export function textarea(
   attributes?: TextAreaAttributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("textarea", attributes, ...content);
 }
@@ -157,7 +157,7 @@ export interface MainAttributes extends Attributes {
 }
 export function main(
   attributes?: MainAttributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("main", attributes, ...content);
 }
@@ -171,7 +171,7 @@ export interface ImgAttributes extends Attributes {
 }
 export function img(
   attributes?: ImgAttributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("img", attributes, ...content);
 }
@@ -187,7 +187,7 @@ export interface TableAttributes extends Attributes {
 }
 export function table(
   attributes?: TableAttributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("table", attributes, ...content);
 }
@@ -197,7 +197,7 @@ export interface TableRowAttributes extends Attributes {}
 
 export function tr(
   attributes?: TableRowAttributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("tr", attributes, ...content);
 }
@@ -208,7 +208,7 @@ export interface TableDataAttributes extends TableAttributes {
 }
 export function td(
   attributes?: TableDataAttributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("td", attributes, ...content);
 }
@@ -218,7 +218,7 @@ export interface CenterAttributes extends Attributes {}
 
 export function center(
   attributes?: CenterAttributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("center", attributes, ...content);
 }
@@ -226,7 +226,7 @@ export function center(
 //<strong>
 export function strong(
   attributes?: Attributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("strong", attributes, ...content);
 }
@@ -267,7 +267,7 @@ export interface SvgAttributes extends Attributes {
 }
 export function svg(
   attributes?: SvgAttributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("svg", attributes, ...content);
 }
@@ -278,7 +278,7 @@ export interface PolygonAttributes extends Attributes {
 }
 export function polygon(
   attributes?: PolygonAttributes | Content,
-  ...content: Element[]
+  ...content: BaseElement[]
 ) {
   return el("polygon", attributes, ...content);
 }

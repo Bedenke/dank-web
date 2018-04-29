@@ -7,7 +7,8 @@ import {
   head,
   title,
   body,
-  Content
+  Content,
+  div
 } from "../../index";
 
 export const Route = $component(
@@ -37,11 +38,9 @@ export const Router = $component(
     element: html(),
     on: "Router.Navigation",
     render: (props, data) => {
-      console.log("ROUTER RENDER", props);
       let routeTitle = "Oops! Page Not Found";
-      let content: Content = "PAGE NOT FOUND: " + data.request.path;
+      let content: Content = div("PAGE NOT FOUND: " + data.request.path);      
       for (let child of props.children) {
-        console.log("ROUTING", data.request.path, child);        
         let attributes = child.attributes;
         if (!attributes) continue;
         if (attributes.path == data.request.path) {

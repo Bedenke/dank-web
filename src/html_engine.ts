@@ -1,5 +1,4 @@
 import {
-  Element,
   Content,
   ElementFunction,
   ElementMetaProperties
@@ -24,15 +23,10 @@ export default class HtmlEngine {
       content.map(node => (out += this.recurse(node, props, data)));
       return out;
     } else if (typeof content == "function") {
-      console.log("RENDER ", props, data);
-
       let updated = (content as ElementFunction)(props, data);
-
-      console.log("RENDERED ", updated);
-
       return this.recurse(updated, props, data);
     } else if (typeof content == "object") {
-      let node = content as Element;
+      let node = content as BaseElement;
       if (node.tag == "$subscribe") {
         return this.recurse(node.content || [], node.attributes!.$props, data);
       }

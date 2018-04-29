@@ -17,24 +17,22 @@ describe("Dank Engine", () => {
     console.log("Dank Render");
     const projectRender = dankEngine.render(project);
     console.log(projectRender);
-
-    //console.log(JSON.stringify(projectRender, null, 2));
   });
 });
 
 
 describe("Html Engine", () => {
-  it("should render dank project", () => {
+  it("should render html project", () => {
     const dankEngine = new DankEngine();
     dankEngine.using(sample_library);
 
     const projectRender = dankEngine.render(project);
 
     const htmlEngine = new HtmlEngine();
-    const htmlRender = htmlEngine.render(projectRender, { request: { path: "/" } })
+    const htmlRender = htmlEngine.render(projectRender, { request: { path: "/404" } })
 
     console.log("");
     console.log("Html Render");
-    console.log(JSON.stringify(htmlRender, null, 2));
+    console.log(htmlRender);
   });
 });

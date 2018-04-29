@@ -1,5 +1,5 @@
 import { $library } from "../../index";
-import { Navigator, NavigatorItem } from "./navigator";
+import { Navigator } from "./navigator";
 import { Router, Route } from "./router";
 import { Footer } from "./footer";
 import { Hero } from "./hero";
@@ -14,7 +14,6 @@ export default $library({
     Router,
     Route,
     Navigator,
-    NavigatorItem,
     Footer,
     Hero,
     Image,

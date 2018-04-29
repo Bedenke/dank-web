@@ -1,9 +1,14 @@
 export type Trigger = string | string[];
 
-export interface Element {
-  tag: string;  
-  attributes?: any;
-  content?: any[];
+declare global {
+  export interface BaseElement {
+    tag: string;
+    attributes?: any;
+    content?: any[];
+  }
+  export interface Library extends BaseElement {}
+  export interface Component extends BaseElement {}
+  export interface LetElement extends BaseElement {}
 }
 
 export interface ElementAttributes {}
@@ -13,14 +18,17 @@ export interface ElementMetaProperties {
   children: ElementMetaProperties[];
   content: Content;
 }
-export type ElementFunction = (props: ElementMetaProperties, data?: any) => Content;
-export type Content = string | Element | Element[];// | ElementFunction;
+export type ElementFunction = (
+  props: ElementMetaProperties,
+  data?: any
+) => Content;
+export type Content = string | BaseElement | BaseElement[]; // | ElementFunction;
 
 export function el(
   tag: string,
   attributesOrElement?: any,
   ...content: any[]
-): Element {
+): BaseElement {
   if (attributesOrElement && attributesOrElement.tag) {
     return {
       tag: tag,
@@ -34,70 +42,82 @@ export function el(
   };
 }
 
-
-declare global {
-  export interface Library extends Element {}
-  export interface Component extends Element {}
-  export interface LetElement extends Element {}
-}
-
 export interface LibraryAttributes {
   id: string;
   name: string;
-  components: Component[]
+  components: Component[];
 }
 export function $library(attributes: LibraryAttributes): Library {
-  return el("$library", attributes)
+  return el("$library", attributes);
 }
 
 export interface ComponentAttributes {
   id: string;
-  name: string;  
+  name: string;
   description?: string;
   allowedComponents?: string[] | boolean;
-  attributes?: LetElement[]
+  attributes?: LetElement[];
 }
-export function $component(attributes: ComponentAttributes, ...content: Content[]): Component {
+export function $component(
+  attributes: ComponentAttributes,
+  ...content: Content[]
+): Component {
   return el("$component", attributes, ...content);
 }
 
-// Dynamic Element (form generation)  
+// Dynamic Element (form generation)
 // https://github.com/formio/formio.js/wiki/Components-JSON-Schema
 export interface $LetAttributes {
-  label: string,
-  type?: 'textfield' | 'textarea' | 'number' | 'email' | 'checkbox' | 'currency',
-  placeholder?: string,
-  multiple?: boolean,
-  name?: string,
-  value?: string,
-  defaultValue?: string
+  key?: string;
+  label: string;
+  type?:
+    | "textfield"
+    | "textarea"
+    | "number"
+    | "email"
+    | "checkbox"
+    | "currency"
+    | "datagrid";
+  placeholder?: string;
+  multiple?: boolean;
+  name?: string;
+  value?: string;
+  defaultValue?: any;
+  components?: $LetAttributes[];
+  valueDecorator?: $LetValueDecorator,
 }
 
-export function $let(attributeName:string, defaultValue: string, attributes?: $LetAttributes): LetElement {
+export type $LetValueDecorator = (input: any) => Content;
+
+export function $let(
+  attributeKey: string,
+  defaultValue: any,
+  attributes?: $LetAttributes
+): LetElement {
   return {
     tag: "$let",
     attributes: {
-      id: attributeName,
+      key: attributeKey,
       ...attributes
     },
     content: [defaultValue]
-  }
+  };
 }
 
-export function $children(): Element {
+export function $children(): BaseElement {
   return {
     tag: "$children"
-  }
+  };
 }
 
 export interface $SubscribeProperties {
-  element: Element,
-  on: Trigger,
-  render: ElementFunction
+  element: BaseElement;
+  on: Trigger;
+  render: ElementFunction;
 }
-export function $subscribe(attributes: $SubscribeProperties): Element {
+export function $subscribe(attributes: $SubscribeProperties): BaseElement {
   return {
     tag: "$subscribe",
     attributes: attributes
-  }
+  };
 }
