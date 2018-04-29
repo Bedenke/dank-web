@@ -7,7 +7,13 @@ export interface Element {
 }
 
 export interface ElementAttributes {}
-export type ElementFunction = () => Element;
+export interface ElementMetaProperties {
+  component: string;
+  attributes: any;
+  children: ElementMetaProperties[];
+  content: Content;
+}
+export type ElementFunction = (props: ElementMetaProperties, data?: any) => Content;
 export type Content = string | Element | Element[];// | ElementFunction;
 
 export function el(
@@ -32,6 +38,7 @@ export function el(
 declare global {
   export interface Library extends Element {}
   export interface Component extends Element {}
+  export interface LetElement extends Element {}
 }
 
 export interface LibraryAttributes {
@@ -48,6 +55,7 @@ export interface ComponentAttributes {
   name: string;  
   description?: string;
   allowedComponents?: string[] | boolean;
+  attributes?: LetElement[]
 }
 export function $component(attributes: ComponentAttributes, ...content: Content[]): Component {
   return el("$component", attributes, ...content);
@@ -65,7 +73,7 @@ export interface $LetAttributes {
   defaultValue?: string
 }
 
-export function $let(attributeName:string, defaultValue: string, attributes?: $LetAttributes): Element {
+export function $let(attributeName:string, defaultValue: string, attributes?: $LetAttributes): LetElement {
   return {
     tag: "$let",
     attributes: {
@@ -82,14 +90,10 @@ export function $children(): Element {
   }
 }
 
-export interface ElementProperties {
-  attributes: any;
-  children: Element[];
-}
 export interface $SubscribeProperties {
   element: Element,
   on: Trigger,
-  render: (ctx: any, props: ElementProperties) => Content
+  render: ElementFunction
 }
 export function $subscribe(attributes: $SubscribeProperties): Element {
   return {

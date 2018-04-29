@@ -1,36 +1,58 @@
-import { Element, Content, ElementFunction } from "./elements";
+import {
+  Element,
+  Content,
+  ElementFunction,
+  ElementMetaProperties
+} from "./elements";
 
 export default class HtmlEngine {
   render(content: Content, data?: any): string {
+    return this.recurse(
+      content,
+      { component: "", attributes: {}, children: [], content: [] },
+      data
+    );
+  }
+
+  private recurse(
+    content: Content,
+    props: ElementMetaProperties,
+    data?: any
+  ): string {
     if (content instanceof Array) {
       let out = "";
-      content.map(node => (out += this.render(node, data)));
+      content.map(node => (out += this.recurse(node, props, data)));
       return out;
     } else if (typeof content == "function") {
-      return this.render((content as ElementFunction)(), data);
+      console.log("RENDER ", props, data);
+
+      let updated = (content as ElementFunction)(props, data);
+
+      console.log("RENDERED ", updated);
+
+      return this.recurse(updated, props, data);
     } else if (typeof content == "object") {
       let node = content as Element;
-      if (node.tag == "$") {
-        return this.getValueFromData(data, node.attributes.id, node.attributes.defaultValue || node.content![0] || "$("+node.attributes.id+")");
+      if (node.tag == "$subscribe") {
+        return this.recurse(node.content || [], node.attributes!.$props, data);
       }
       var tagDefinition = "<" + node.tag;
       if (node.attributes) {
         for (let key of Object.keys(node.attributes)) {
-          if (key == "trigger" || key == "tag") continue;
+          if (
+            key == "tag" ||
+            key == "$props" ||
+            key == "$on" ||
+            key == "$render"
+          )
+            continue;
           let attribute = node.attributes[key];
           let value: any;
           if (key.indexOf("on") == 0) {
             value = attribute.toString(); //TODO support scripts
           } else {
             if (typeof attribute == "function") {
-              value = attribute();
-            } else if (typeof attribute == "object") {
-              if (attribute.tag == "$") {
-                let nodeAttribute = attribute;
-                value = this.getValueFromData(data, nodeAttribute.attributes.id, nodeAttribute.attributes.defaultValue || nodeAttribute.content![0] || "$("+nodeAttribute.attributes.id+")");
-              } else {
-                console.warn("WARNING! Invalid attribute for ", node, attribute);                
-              }
+              value = attribute(node.attributes.$props, data);
             } else {
               value = attribute;
             }
@@ -54,20 +76,15 @@ export default class HtmlEngine {
       }
       tagDefinition += ">";
       let innerHTML = "";
-      if (node.content) innerHTML = this.render(node.content, data);
+      if (node.content) {
+        let childProps = node.attributes
+          ? node.attributes.$props || props
+          : props;
+        innerHTML = this.recurse(node.content, childProps, data);
+      }
       return tagDefinition + innerHTML + "</" + node.tag + ">";
     } else {
       return content.toString();
     }
-  }
-
-  getValueFromData(data: any, key: string, defaultValue: string = ""): string {
-    const path = key.split(".");
-    let node = data;
-    for (let item of path) {
-      if (!node) return defaultValue;
-      node = node[item];
-    }
-    return node || defaultValue;
   }
 }

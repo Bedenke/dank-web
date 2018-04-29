@@ -14,13 +14,15 @@ export const Route = $component(
   {
     id: "Route",
     name: "Route",
-    description: "Router's route, to be used as child of Router"
+    description: "Router's route, to be used as child of Router",
+    attributes: [
+      $let("path", "/path"),
+      $let("title", "Route Title", {
+        label: "Page Title",
+        placeholder: "My Page Title"
+      })
+    ]
   },
-  $let("path", "/path"),
-  $let("title", "Route Title", {
-    label: "Page Title",
-    placeholder: "My Page Title"
-  }),
   $children()
 );
 
@@ -34,19 +36,21 @@ export const Router = $component(
   $subscribe({
     element: html(),
     on: "Router.Navigation",
-    render: (ctx, props) => {
+    render: (props, data) => {
+      console.log("ROUTER RENDER", props);
       let routeTitle = "Oops! Page Not Found";
-      let content: Content = "PAGE NOT FOUND: " + ctx.request.path;
+      let content: Content = "PAGE NOT FOUND: " + data.request.path;
       for (let child of props.children) {
+        console.log("ROUTING", data.request.path, child);        
         let attributes = child.attributes;
         if (!attributes) continue;
-        if (attributes.path == ctx.request.path) {
-          content = child;
+        if (attributes.path == data.request.path) {
+          routeTitle = attributes.title;
+          content = child.content;
           break;
         }
       }
       return [head(title(routeTitle)), body(content)];
     }
-  }),
-  $children()
+  })
 );

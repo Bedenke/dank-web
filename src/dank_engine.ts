@@ -5,14 +5,9 @@ import {
   LibraryAttributes,
   ComponentAttributes,
   $LetAttributes,
-  $SubscribeProperties
+  $SubscribeProperties,
+  ElementMetaProperties
 } from "./elements";
-
-interface Node {
-  component: string;
-  attributes: any;
-  children?: Node[];
-}
 
 export default class DankEngine {
   components: { [id: string]: Component } = {};
@@ -22,7 +17,9 @@ export default class DankEngine {
     for (let component of attributes.components) {
       let componentAttributes = component.attributes as ComponentAttributes;
       if (this.components[componentAttributes.id]) {
-        console.warn(`Component ${componentAttributes.id} already registered`);
+        console.warn(
+          `🔥 Component ${componentAttributes.id} already registered`
+        );
       } else {
         this.components[componentAttributes.id] = component;
       }
@@ -30,13 +27,12 @@ export default class DankEngine {
   }
 
   render(project: any): Content {
-    let rootNode = project.root as Node;
-    let outputElement = this.recurse(rootNode);
+    let rootElementMetaProperties = project.root as ElementMetaProperties;
+    let outputElement = this.recurse(rootElementMetaProperties);
     return outputElement;
   }
 
-  private recurse(node: Node): Content {
-    console.log("recurse (begin)", node.component, node.attributes);
+  private recurse(node: ElementMetaProperties): Content {
     let component = this.components[node.component];
     if (!component) {
       console.error("🔥 Component not found", node.component);
@@ -53,25 +49,15 @@ export default class DankEngine {
         childrenContent.push(this.recurse(child));
       }
     }
-
-    console.log("recurse content (begin)", node.component, node.attributes);
-    let result: Content = this.recurseContent(
-      node,
-      component.content,
-      childrenContent
-    );
-    console.log("recurse content (end)", node.component, node.attributes);
-
-    return result;
+    node.content = this.recurseContent(node, component.content, childrenContent);
+    return node.content;
   }
 
   private recurseContent(
-    node: Node,
+    node: ElementMetaProperties,
     content: any[],
     childrenContent: Content[]
   ): any {
-    console.log("AT ", content);
-
     if (content instanceof Array) {
       let out = [];
       for (let child of content) {
@@ -87,16 +73,22 @@ export default class DankEngine {
         return node.attributes[element.attributes!.id] || element.content![0];
       }
       if (element.tag == "$children") {
-        return childrenContent.length == 1 ? childrenContent[0] : childrenContent;
+        return childrenContent.length == 1
+          ? childrenContent[0]
+          : childrenContent;
       }
       if (element.tag == "$subscribe") {
         let attributes = element.attributes as $SubscribeProperties;
         return {
-          tag: attributes.element.tag,
+          tag: element.tag,
           attributes: {
-            ...attributes.element.attributes,
             $on: attributes.on,
-            $render: attributes.render
+            $props: node
+          },
+          content: {
+            tag: attributes.element.tag,
+            attribute: attributes.element.attributes,
+            content: attributes.render
           }
         };
       }
@@ -114,14 +106,19 @@ export default class DankEngine {
         for (let key of Object.keys(element.attributes)) {
           let attribute = element.attributes[key];
           if (attribute.tag == "$let") {
-            element.attributes[key] = node.attributes[attribute.attributes!.id] || attribute.content![0];
+            element.attributes[key] =
+              node.attributes[attribute.attributes!.id] ||
+              attribute.content![0];
           }
         }
       }
 
       return {
         tag: element.tag,
-        attributes: element.attributes,
+        attributes: {
+          ...element.attributes,
+          $props: node
+        },
         content: newContent.length == 1 ? newContent[0] : newContent
       };
     }
