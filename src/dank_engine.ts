@@ -66,7 +66,8 @@ export default class DankEngine {
     if (content instanceof Array) {
       let out = [];
       for (let child of content) {
-        out.push(this.recurseContent(node, child, childrenContent));
+        let updatedChild = this.recurseContent(node, child, childrenContent);
+        if (updatedChild != undefined) out.push(updatedChild);
       }
       return out.length == 1 ? out[0] : out;
     }
