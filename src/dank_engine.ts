@@ -10,7 +10,7 @@ import {
 
 export default class DankEngine {
   components: { [id: string]: Component } = {};
-  global: any = {};
+  private global: any = {};
 
   using(library: Library) {
     let attributes = library.attributes as LibraryAttributes;
@@ -129,7 +129,7 @@ export default class DankEngine {
     return content;
   }
 
-  letValue(node: ElementMetaProperties, letElement: LetElement) {
+  private letValue(node: ElementMetaProperties, letElement: LetElement) {
     let letAttributes = letElement.attributes as $LetAttributes;
     if (letAttributes.global && !this.global) {
       console.error("🔥 global attributes were not defined");
