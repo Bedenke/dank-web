@@ -29,10 +29,16 @@ describe("Html Engine", () => {
     const projectRender = dankEngine.render(project);
 
     const htmlEngine = new HtmlEngine();
-    const htmlRender = htmlEngine.render(projectRender, { request: { path: "/second" } })
+    let htmlRender = htmlEngine.render(projectRender, { request: { path: "/" } })
 
     console.log("");
-    console.log("Html Render");
+    console.log("Html Render /");
     console.log(htmlRender);
+
+    htmlRender = htmlEngine.render(projectRender, { request: { path: "/second" } })
+    console.log("");
+    console.log("Html Render /second");
+    console.log(htmlRender);
+
   });
 });

@@ -10,6 +10,7 @@ import {
 
 export default class DankEngine {
   components: { [id: string]: Component } = {};
+  global: any = {};
 
   using(library: Library) {
     let attributes = library.attributes as LibraryAttributes;
@@ -27,6 +28,7 @@ export default class DankEngine {
 
   render(project: any): Content {
     let rootElementMetaProperties = project.root as ElementMetaProperties;
+    this.global = project.global || {};
     let outputElement = this.recurse(rootElementMetaProperties);
     return outputElement;
   }
@@ -72,7 +74,7 @@ export default class DankEngine {
     if (typeof content == "object") {
       let element = content as BaseElement;
 
-      if (element.tag == "$let") {        
+      if (element.tag == "$let") {
         return this.letValue(node, element);
       }
       if (element.tag == "$children") {
@@ -128,17 +130,23 @@ export default class DankEngine {
   }
 
   letValue(node: ElementMetaProperties, letElement: LetElement) {
-    if (!node.attributes) {
-      console.error(
-        "🔥 $let attributes is not defined for",
-        node.component
-      );
+    let letAttributes = letElement.attributes as $LetAttributes;
+    if (letAttributes.global && !this.global) {
+      console.error("🔥 global attributes were not defined");
       return [];
     }
-    let letAttributes = letElement.attributes as $LetAttributes;
-    let value =
-      node.attributes[letAttributes.key!] ||
-      (letElement.content ? letElement.content[0] : undefined);
+    if (!letAttributes.global && !node.attributes) {
+      console.error("🔥 $let attributes is not defined for", node.component);
+      return [];
+    }
+
+    let globalValue = !!letAttributes.global
+      ? this.global[letAttributes.key!]
+      : undefined;
+    let defaultValue = letElement.content ? letElement.content[0] : undefined;
+    let localValue = node.attributes ? node.attributes[letAttributes.key!] : undefined;
+    let value = localValue || globalValue || defaultValue;
+
     if (value == undefined) {
       console.error(
         "🔥 Value is not defined for",
@@ -149,6 +157,7 @@ export default class DankEngine {
       );
       return [];
     }
+
     return letAttributes.valueDecorator
       ? letAttributes.valueDecorator(value)
       : value;

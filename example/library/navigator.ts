@@ -2,10 +2,10 @@ import {
   ul,
   li,
   a,
-  $let,
   $children,
   $component,
-  $subscribe
+  $subscribe,
+  $global
 } from "../../index";
 
 export interface NavigatorItemAttributes {
@@ -25,8 +25,8 @@ export const Navigator = $component(
   },
   ul(
     { class: "navigator" },
-    $let(
-      "links",
+    $global(
+      "navigation.links",
       {
         links: [
           { url: "/default/url1", label: "Link Name 1" },

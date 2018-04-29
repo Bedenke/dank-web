@@ -2,11 +2,10 @@ export default {
   "id": "sample_project",
   "name": "Sample Project",
   "global": {
-    "navigation":{
-      "links": [
-
-      ]
-    }
+    "navigation.links": [
+      { "label": "Sample Page 1", "url": "/sample_page1" },
+      { "label": "Sample Page 2", "url": "/sample_page2" }
+    ]
   },
   "root": {
     "component": "Router",
@@ -23,12 +22,6 @@ export default {
             "children": [
               {
                 "component": "Navigator",
-                "attributes": {
-                  "links": [
-                    { "label": "Sample Page 1", "url": "/sample_page1" },
-                    { "label": "Sample Page 2", "url": "/sample_page2" }
-                  ]
-                }
               },
               {
                 "component": "Hero",
@@ -71,9 +64,9 @@ export default {
               {
                 "component": "Navigator",
                 "attributes": {
-                  "links": [
-                    { "label": "Sample Page 1", "url": "/sample_page1" },
-                    { "label": "Sample Page 2", "url": "/sample_page2" }
+                  "navigation.links": [
+                    { "label": "Second Sample Page 1", "url": "/sample_page1" },
+                    { "label": "Second Sample Page 2", "url": "/sample_page2" }
                   ]
                 }
               },

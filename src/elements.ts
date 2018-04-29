@@ -91,6 +91,7 @@ export interface $LetAttributes {
   defaultValue?: any;
   components?: $LetAttributes[];
   valueDecorator?: $LetValueDecorator,
+  global?: boolean
 }
 
 export type $LetValueDecorator = (input: any) => Content;
@@ -104,6 +105,23 @@ export function $let(
     tag: "$let",
     attributes: {
       key: attributeKey,
+      global: false,
+      ...attributes
+    },
+    content: [defaultValue]
+  };
+}
+
+export function $global(
+  attributeKey: string,
+  defaultValue: any,
+  attributes?: $LetAttributes
+): LetElement {
+  return {
+    tag: "$let",
+    attributes: {
+      key: attributeKey,
+      global: true,
       ...attributes
     },
     content: [defaultValue]
