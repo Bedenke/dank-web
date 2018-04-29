@@ -72,27 +72,8 @@ export default class DankEngine {
     if (typeof content == "object") {
       let element = content as BaseElement;
 
-      if (element.tag == "$let") {
-        if (!node.attributes) {
-          console.error("🔥 $let attributes is not defined for", node.component);
-          return [];
-        }
-        let letAttributes = element.attributes as $LetAttributes;
-        let value =
-          node.attributes[letAttributes.key!] ||
-          (element.content ? element.content[0] : undefined);
-        if (value == undefined) {
-          console.error(
-            "🔥 Value is not defined for",
-            letAttributes.key,
-            "on",
-            node.component
-          );
-          return [];
-        }
-        return letAttributes.valueDecorator
-          ? letAttributes.valueDecorator(value)
-          : value;
+      if (element.tag == "$let") {        
+        return this.letValue(node, element);
       }
       if (element.tag == "$children") {
         return childrenContent.length == 1
@@ -128,9 +109,7 @@ export default class DankEngine {
         for (let key of Object.keys(element.attributes)) {
           let attribute = element.attributes[key];
           if (attribute.tag == "$let") {
-            element.attributes[key] =
-              node.attributes[attribute.attributes!.id] ||
-              attribute.content![0];
+            element.attributes[key] = this.letValue(node, attribute);
           }
         }
       }
@@ -146,5 +125,32 @@ export default class DankEngine {
     }
 
     return content;
+  }
+
+  letValue(node: ElementMetaProperties, letElement: LetElement) {
+    if (!node.attributes) {
+      console.error(
+        "🔥 $let attributes is not defined for",
+        node.component
+      );
+      return [];
+    }
+    let letAttributes = letElement.attributes as $LetAttributes;
+    let value =
+      node.attributes[letAttributes.key!] ||
+      (letElement.content ? letElement.content[0] : undefined);
+    if (value == undefined) {
+      console.error(
+        "🔥 Value is not defined for",
+        letAttributes.key,
+        "on",
+        letElement,
+        node.component
+      );
+      return [];
+    }
+    return letAttributes.valueDecorator
+      ? letAttributes.valueDecorator(value)
+      : value;
   }
 }

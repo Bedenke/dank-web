@@ -70,16 +70,12 @@ export default {
             "children": [
               {
                 "component": "Navigator",
-                "children": [
-                  {
-                    "component": "NavigatorItem",
-                    "attributes": { "label": "Sample Page 1", "url": "/sample_page1" }
-                  },
-                  {
-                    "component": "NavigatorItem",
-                    "attributes": { "label": "Sample Page 2", "url": "/sample_page2" }
-                  }
-                ]
+                "attributes": {
+                  "links": [
+                    { "label": "Sample Page 1", "url": "/sample_page1" },
+                    { "label": "Sample Page 2", "url": "/sample_page2" }
+                  ]
+                }
               },
               {
                 "component": "Hero",

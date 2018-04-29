@@ -29,7 +29,7 @@ describe("Html Engine", () => {
     const projectRender = dankEngine.render(project);
 
     const htmlEngine = new HtmlEngine();
-    const htmlRender = htmlEngine.render(projectRender, { request: { path: "/404" } })
+    const htmlRender = htmlEngine.render(projectRender, { request: { path: "/second" } })
 
     console.log("");
     console.log("Html Render");
