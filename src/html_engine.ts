@@ -1,38 +1,26 @@
-import {
-  Content,
-  ElementFunction,
-  ElementMetaProperties
-} from "./elements";
+import { ElementFunction } from "./elements";
 
 export default class HtmlEngine {
   render(content: Content, data?: any): string {
-    return this.recurse(
-      content,
-      { component: "", attributes: {}, children: [], content: [] },
-      data
-    );
+    return this.recurse(content, data);
   }
 
-  private recurse(
-    content: Content,
-    props: ElementMetaProperties,
-    data?: any
-  ): string {
+  private recurse(content: Content, data?: any): string {
     if (content instanceof Array) {
       let out = "";
       for (let child of content) {
         if (child) {
-          out += this.recurse(child, props, data)
+          out += this.recurse(child, data);
         }
       }
       return out;
     } else if (typeof content == "function") {
-      let updated = (content as ElementFunction)(props, data);
-      return this.recurse(updated, props, data);
+      let updated = (content as ElementFunction)(data);
+      return this.recurse(updated, data);
     } else if (typeof content == "object") {
       let node = content as BaseElement;
       if (node.tag == "$subscribe") {
-        return this.recurse(node.content || [], node.attributes!.$props, data);
+        return this.recurse(node.content || [], data);
       }
       var tagDefinition = "<" + node.tag;
       if (node.attributes) {
@@ -75,13 +63,10 @@ export default class HtmlEngine {
       tagDefinition += ">";
       let innerHTML = "";
       if (node.content) {
-        let childProps = node.attributes
-          ? node.attributes.$props || props
-          : props;
-        innerHTML = this.recurse(node.content, childProps, data);
+        innerHTML = this.recurse(node.content, data);
       }
       return tagDefinition + innerHTML + "</" + node.tag + ">";
-    } else { 
+    } else {
       return (content || "").toString();
     }
   }

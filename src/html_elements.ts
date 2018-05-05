@@ -1,4 +1,4 @@
-import { el, Content } from "./elements";
+import { el } from "./elements";
 
 // HTML elements
 
@@ -92,7 +92,10 @@ export function h3(attributes?: Attributes | Content, ...content: Content[]) {
 }
 
 //<footer>
-export function footer(attributes?: Attributes | Content, ...content: Content[]) {
+export function footer(
+  attributes?: Attributes | Content,
+  ...content: Content[]
+) {
   return el("footer", attributes, ...content);
 }
 

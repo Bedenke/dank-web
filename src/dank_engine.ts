@@ -1,166 +1,117 @@
 import {
-  Content,
   ElementFunction,
-  LibraryAttributes,
-  ComponentAttributes,
-  $LetAttributes,
-  $SubscribeProperties,
-  ElementMetaProperties
+  $VarAttributes,
+  $SubscribeProperties
 } from "./elements";
 
 export default class DankEngine {
-  components: { [id: string]: Component } = {};
-  private global: any = {};
+  meta: any = {};
 
-  using(library: Library) {
-    let attributes = library.attributes as LibraryAttributes;
-    for (let component of attributes.components) {
-      let componentAttributes = component.attributes as ComponentAttributes;
-      if (this.components[componentAttributes.id]) {
-        console.warn(
-          `🔥 Component ${componentAttributes.id} already registered`
-        );
-      } else {
-        this.components[componentAttributes.id] = component;
-      }
-    }
+  render(page: $Page, data?: any): Content {
+    return this.recurse("data", 0, page.content, data);
   }
 
-  render(project: any): Content {
-    let rootElementMetaProperties = project.root as ElementMetaProperties;
-    this.global = project.global || {};
-    let outputElement = this.recurse(rootElementMetaProperties);
-    return outputElement;
-  }
-
-  private recurse(node: ElementMetaProperties): Content {
-    let component = this.components[node.component];
-    if (!component) {
-      console.error("🔥 Component not found", node.component);
-      return "[🔥 Component not found " + node.component + "]";
-    }
-    if (!component.content) {
-      console.error("🔥 Component is empty", node.component);
-      return "[🔥 Component is empty " + node.component + "]";
-    }
-
-    let childrenContent: Content[] = [];
-    if (node.children) {
-      for (let child of node.children) {
-        childrenContent.push(this.recurse(child));
-      }
-    }
-    node.content = this.recurseContent(
-      node,
-      component.content,
-      childrenContent
-    );
-    return node.content;
-  }
-
-  private recurseContent(
-    node: ElementMetaProperties,
-    content: any[],
-    childrenContent: Content[]
-  ): any {
+  private recurse(treeKey: string, index: number, content: Content, data: any): any {
     if (content instanceof Array) {
       let out = [];
-      for (let child of content) {
-        let updatedChild = this.recurseContent(node, child, childrenContent);
+      for (let i = 0; i < content.length; i++) {
+        let updatedChild = this.recurse(treeKey, i, content[i], data);
         if (updatedChild != undefined) out.push(updatedChild);
       }
-      return out.length == 1 ? out[0] : out;
+      if (out.length == 0) {
+        return undefined;
+      } else {
+        return out.length == 1 ? out[0] : out;
+      }
     }
 
-    if (typeof content == "object") {
-      let element = content as BaseElement;
+    if (typeof content != "object") {
+      return content;
+    }
 
-      if (element.tag == "$let") {
-        return this.letValue(node, element);
-      }
-      if (element.tag == "$children") {
-        return childrenContent.length == 1
-          ? childrenContent[0]
-          : childrenContent;
-      }
-      if (element.tag == "$subscribe") {
-        let attributes = element.attributes as $SubscribeProperties;
-        return {
-          tag: element.tag,
-          attributes: {
-            $on: attributes.on,
-            $props: node
-          },
-          content: {
-            tag: attributes.element.tag,
-            attribute: attributes.element.attributes,
-            content: attributes.render
-          }
-        };
-      }
+    let element = content as BaseElement;
 
-      let newContent: any[] = [];
-      if (element.content) {
-        newContent = this.recurseContent(
-          node,
-          element.content,
-          childrenContent
-        );
-      }
+    if (element.tag == "$var") {
+      return this.varValue(treeKey, element, data);
+    }
 
-      if (element.attributes) {
-        for (let key of Object.keys(element.attributes)) {
-          let attribute = element.attributes[key];
-          if (attribute.tag == "$let") {
-            element.attributes[key] = this.letValue(node, attribute);
-          }
-        }
-      }
-
+    if (element.tag == "$subscribe") {
+      let attributes = element.attributes as $SubscribeProperties;
       return {
         tag: element.tag,
         attributes: {
-          ...element.attributes,
-          $props: node
+          $on: attributes.on
         },
-        content: newContent.length == 1 ? newContent[0] : newContent
+        content: {
+          tag: attributes.element.tag,
+          attribute: attributes.element.attributes,
+          content: attributes.render
+        }
       };
     }
 
-    return content;
+    let currentTreeKey = treeKey + "_" + element.tag + index;
+
+    let newContent: any[] = [];
+    if (element.content) {
+      newContent = this.recurse(currentTreeKey, index, element.content, data);
+    }
+
+    if (element.attributes) {
+      for (let key of Object.keys(element.attributes)) {
+        let attribute = element.attributes[key];
+        if (attribute.tag == "$var") {
+          let varElement = attribute;
+          element.attributes[key] = this.varValue(
+            currentTreeKey + "." + key,
+            varElement,
+            data
+          );
+        }
+      }
+    }
+
+    return {
+      tag: element.tag,
+      attributes: {
+        ...element.attributes
+      },
+      content: newContent
+        ? newContent.length == 1
+          ? newContent[0]
+          : newContent
+        : undefined
+    };
   }
 
-  private letValue(node: ElementMetaProperties, letElement: LetElement) {
-    let letAttributes = letElement.attributes as $LetAttributes;
-    if (letAttributes.global && !this.global) {
-      console.error("🔥 global attributes were not defined");
-      return [];
-    }
-    if (!letAttributes.global && !node.attributes) {
-      console.error("🔥 $let attributes is not defined for", node.component);
-      return [];
-    }
+  private varValue(treeKey: string, varElement: VarElement, data?: any) {
+    let varAttributes: $VarAttributes = { ...varElement.attributes };
 
-    let globalValue = !!letAttributes.global
-      ? this.global[letAttributes.key!]
-      : undefined;
-    let defaultValue = letElement.content ? letElement.content[0] : undefined;
-    let localValue = node.attributes ? node.attributes[letAttributes.key!] : undefined;
-    let value = localValue || globalValue || defaultValue;
+    varAttributes.type = varAttributes.type || "textfield";
+    varAttributes.input = true;
+
+    let path = varAttributes.path || treeKey;
+    let key = path + ":" + varAttributes.key;
+
+    this.meta[key] = varAttributes;
+
+    let defaultValue = varElement.content ? varElement.content[0] : undefined;
+    let localValue = data ? data[key] : undefined;
+    let value = localValue || defaultValue;
 
     if (value == undefined) {
       console.error(
         "🔥 Value is not defined for",
-        letAttributes.key,
+        key,
         "on",
-        letElement,
-        node.component
+        varElement,
+        `(${treeKey})`
       );
-      return [];
+      return;
     }
 
-    return letAttributes.valueDecorator
-      ? letAttributes.valueDecorator(value)
+    return varAttributes.valueDecorator
+      ? varAttributes.valueDecorator(value)
       : value;
   }
 }

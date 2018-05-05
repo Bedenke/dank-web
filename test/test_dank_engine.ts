@@ -1,22 +1,21 @@
 import { expect } from "chai";
-import sample_library from "../example/library/sample_library";
-import project from "../example/projects/sample_project";
+import page1 from "../example/pages/page1";
 import { DankEngine, HtmlEngine } from "..";
+import single_page from "../example/pages/single_page";
 
 describe("Dank Engine", () => {
   it("should render dank project", () => {
     const dankEngine = new DankEngine();
-    dankEngine.using(sample_library);
 
-    console.log("Using components:");
-    Object.keys(dankEngine.components).map((id: any) => {
+    console.log("Dank Render");
+    const projectRender = dankEngine.render(page1);
+    console.log(projectRender);
+
+    console.log("Meta:");
+    Object.keys(dankEngine.meta).map((id: any) => {
       console.log(id);
     });
 
-    console.log("");
-    console.log("Dank Render");
-    const projectRender = dankEngine.render(project);
-    console.log(projectRender);
   });
 });
 
@@ -24,9 +23,7 @@ describe("Dank Engine", () => {
 describe("Html Engine", () => {
   it("should render html project", () => {
     const dankEngine = new DankEngine();
-    dankEngine.using(sample_library);
-
-    const projectRender = dankEngine.render(project);
+    const projectRender = dankEngine.render(single_page);
 
     const htmlEngine = new HtmlEngine();
     let htmlRender = htmlEngine.render(projectRender, { request: { path: "/" } })

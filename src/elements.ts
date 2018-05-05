@@ -6,23 +6,16 @@ declare global {
     attributes?: any;
     content?: any[];
   }
-  export interface Library extends BaseElement {}
-  export interface Component extends BaseElement {}
-  export interface LetElement extends BaseElement {}
+  export interface $Page {
+    attributes: $PageAttributes;
+    content: Content;
+  }
+  export interface VarElement extends BaseElement {}
+  export type Content = string | BaseElement | BaseElement[]; // | ElementFunction;
 }
 
 export interface ElementAttributes {}
-export interface ElementMetaProperties {
-  component: string;
-  attributes: any;
-  children: ElementMetaProperties[];
-  content: Content;
-}
-export type ElementFunction = (
-  props: ElementMetaProperties,
-  data?: any
-) => Content;
-export type Content = string | BaseElement | BaseElement[]; // | ElementFunction;
+export type ElementFunction = (data?: any) => Content;
 
 export function el(
   tag: string,
@@ -48,34 +41,19 @@ export function el(
   };
 }
 
-export interface LibraryAttributes {
-  id: string;
-  name: string;
-  components: Component[];
-}
-export function $library(attributes: LibraryAttributes): Library {
-  return el("$library", attributes);
-}
-
-export interface ComponentAttributes {
-  id: string;
+export interface $PageAttributes {
   name: string;
   description?: string;
-  allowedComponents?: string[] | boolean;
-  attributes?: LetElement[];
 }
-export function $component(
-  attributes: ComponentAttributes,
-  ...content: Content[]
-): Component {
-  return el("$component", attributes, ...content);
+export function $page(attributes: $PageAttributes, content: Content): $Page {
+  return { attributes, content };
 }
 
 // Dynamic Element (form generation)
 // https://github.com/formio/formio.js/wiki/Components-JSON-Schema
-export interface $LetAttributes {
+export interface $FormAttributes {
   key?: string;
-  label: string;
+  label?: string;
   type?:
     | "textfield"
     | "textarea"
@@ -89,48 +67,25 @@ export interface $LetAttributes {
   name?: string;
   value?: string;
   defaultValue?: any;
-  components?: $LetAttributes[];
-  valueDecorator?: $LetValueDecorator,
-  global?: boolean
+  input?: boolean;
+  components?: $FormAttributes[];
 }
 
-export type $LetValueDecorator = (input: any) => Content;
+export interface $VarAttributes extends $FormAttributes {
+  path?: string;
+  valueDecorator?: $VarValueDecorator;
+}
 
-export function $let(
-  attributeKey: string,
+export type $VarValueDecorator = (input: any) => Content;
+
+export function $var(
   defaultValue: any,
-  attributes?: $LetAttributes
-): LetElement {
+  attributes: $VarAttributes
+): VarElement {
   return {
-    tag: "$let",
-    attributes: {
-      key: attributeKey,
-      global: false,
-      ...attributes
-    },
+    tag: "$var",
+    attributes: attributes,
     content: [defaultValue]
-  };
-}
-
-export function $global(
-  attributeKey: string,
-  defaultValue: any,
-  attributes?: $LetAttributes
-): LetElement {
-  return {
-    tag: "$let",
-    attributes: {
-      key: attributeKey,
-      global: true,
-      ...attributes
-    },
-    content: [defaultValue]
-  };
-}
-
-export function $children(): BaseElement {
-  return {
-    tag: "$children"
   };
 }
 
