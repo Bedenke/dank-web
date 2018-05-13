@@ -1,21 +1,17 @@
+import { Context } from "./context";
+
 export type Trigger = string | string[];
 
 declare global {
   export interface BaseElement {
-    tag: string;
-    attributes?: any;
-    content?: any[];
+    $tag: string;
+    $attributes?: any;
+    $content?: any[];
   }
-  export interface $Page {
-    attributes: $PageAttributes;
-    content: Content;
-  }
-  export interface VarElement extends BaseElement {}
-  export type Content = string | BaseElement | BaseElement[]; // | ElementFunction;
+  export type Content = string | BaseElement | BaseElement[];
+  export interface ElementAttributes {}
+  export type ElementFunction = (context: Context) => Content;
 }
-
-export interface ElementAttributes {}
-export type ElementFunction = (data?: any) => Content;
 
 export function el(
   tag: string,
@@ -23,30 +19,20 @@ export function el(
   ...content: any[]
 ): BaseElement {
   if (typeof attributesOrContent == "object") {
-    if (attributesOrContent.tag) {
-      // Is element
-      return attributesOrContent;
+    if (attributesOrContent.$tag == undefined) {
+      // Is attribute
+      return {
+        $tag: tag,
+        $attributes: attributesOrContent,
+        $content: content
+      };
     }
-    // Is attribute
-    return {
-      tag: tag,
-      attributes: attributesOrContent,
-      content: content
-    };
   }
   // Is content (string, number, array)
   return {
-    tag: tag,
-    content: [attributesOrContent].concat(content || [])
+    $tag: tag,
+    $content: [attributesOrContent].concat(content || [])
   };
-}
-
-export interface $PageAttributes {
-  name: string;
-  description?: string;
-}
-export function $page(attributes: $PageAttributes, content: Content): $Page {
-  return { attributes, content };
 }
 
 // Dynamic Element (form generation)
@@ -71,32 +57,41 @@ export interface $FormAttributes {
   components?: $FormAttributes[];
 }
 
-export interface $VarAttributes extends $FormAttributes {
-  path?: string;
-  valueDecorator?: $VarValueDecorator;
+export interface $GetResult {
+  loading: boolean;
+  data?: any;
+  error?: Error;
 }
 
-export type $VarValueDecorator = (input: any) => Content;
-
-export function $var(
-  defaultValue: any,
-  attributes: $VarAttributes
-): VarElement {
-  return {
-    tag: "$var",
-    attributes: attributes,
-    content: [defaultValue]
-  };
+export interface $GetAttributes {
+  from(context: Context): Promise<any>;
+  render(result: $GetResult): Content | undefined;
+}
+export function $get(attributes: $GetAttributes) {
+  return el("$get", attributes);
 }
 
-export interface $SubscribeProperties {
+export function $(key: string, defaultValue?: any) {
+  return $get({
+    from: context => {
+      let value = context.global(key) || defaultValue;
+      if (value == undefined) {
+        console.warn("🔥 Global value is not defined for", key);
+      }
+      return value;
+    },
+    render: result => result.data
+  });
+}
+
+export interface $SubscribeAttributes {
   element: BaseElement;
   on: Trigger;
-  render: ElementFunction;
+  render(context: Context): Promise<Content | undefined>;
 }
-export function $subscribe(attributes: $SubscribeProperties): BaseElement {
+export function $subscribe(attributes: $SubscribeAttributes): BaseElement {
   return {
-    tag: "$subscribe",
-    attributes: attributes
+    $tag: "$subscribe",
+    $attributes: attributes
   };
 }

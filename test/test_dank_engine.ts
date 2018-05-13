@@ -1,41 +1,66 @@
 import { expect } from "chai";
-import page1 from "../example/pages/page1";
-import { DankEngine, HtmlEngine } from "..";
-import single_page from "../example/pages/single_page";
+import { HtmlEngine } from "..";
+import website from "../example/pages/website";
+import { Context } from "../src/context";
+  
+const globalData = {
+  "footer": {
+    "text": "Global footer text"
+  },
+  "links": [
+    { "url": "/global/url1", "label": "Global Link Name 1" },
+    { "url": "/global/url2", "label": "Global Link Name 2" },
+    { "url": "/global/url3", "label": "Global Link Name 3" }
+  ]
+}
 
-describe("Dank Engine", () => {
-  it("should render dank project", () => {
-    const dankEngine = new DankEngine();
-
-    console.log("Dank Render");
-    const projectRender = dankEngine.render(page1);
-    console.log(projectRender);
-
-    console.log("Meta:");
-    Object.keys(dankEngine.meta).map((id: any) => {
-      console.log(id);
-    });
-
-  });
-});
-
+const htmlEngine = new HtmlEngine();
 
 describe("Html Engine", () => {
-  it("should render html project", () => {
-    const dankEngine = new DankEngine();
-    const projectRender = dankEngine.render(single_page);
+  it("should render html project", async () => {
+    let newsPageContext = new Context({
+      dataDirectory: "example/data/",
+      global: globalData,
+      request: {
+        url: "https://localhost/",
+        path: "/"
+      }
+    });
 
-    const htmlEngine = new HtmlEngine();
-    let htmlRender = htmlEngine.render(projectRender, { request: { path: "/" } })
-
+    let htmlRender = await htmlEngine.render(website, newsPageContext);
+    
     console.log("");
     console.log("Html Render /");
     console.log(htmlRender);
 
-    htmlRender = htmlEngine.render(projectRender, { request: { path: "/second" } })
+    let awardsPageContext = new Context({
+      dataDirectory: "example/data/",
+      global: globalData,
+      request: {
+        url: "https://localhost/",
+        path: "/awards"
+      }
+    });
+
+    htmlRender = await htmlEngine.render(website, awardsPageContext);
+    
     console.log("");
-    console.log("Html Render /second");
+    console.log("Html Render /awards");
     console.log(htmlRender);
 
+    let notFoundPageContext = new Context({
+      dataDirectory: "example/data/",
+      global: globalData,
+      request: {
+        url: "https://localhost/",
+        path: "/not-found"
+      }
+    });
+
+    htmlRender = await htmlEngine.render(website, notFoundPageContext);
+    
+    console.log("");
+    console.log("Html Render 404");
+    console.log(htmlRender);
   });
 });

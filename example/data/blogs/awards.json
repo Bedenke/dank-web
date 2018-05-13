@@ -1,0 +1,14 @@
+{
+  "posts": [
+    {
+      "slug": "awards-1",
+      "title": "What is Lorem Ipsum?",
+      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget sem vel felis dapibus pretium in eget dolor. Fusce sodales posuere lorem, tincidunt blandit nibh ornare quis. Proin semper viverra auctor. Quisque malesuada, est blandit hendrerit accumsan, ex nisi volutpat arcu, ac ultricies ipsum dolor id lectus. Fusce vel dui id odio ultrices hendrerit convallis in lectus. Mauris accumsan, nulla a egestas ullamcorper"
+    },
+    {
+      "slug": "awards-2",
+      "title": "Where does it come from?",
+      "content": "Integer egestas metus nisi, non pharetra leo luctus at. Phasellus ut turpis finibus, ultricies nibh sit amet, volutpat ex"
+    }
+  ]
+}

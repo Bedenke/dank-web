@@ -1,44 +1,49 @@
-import { ElementFunction } from "./elements";
+import { $GetAttributes, $GetResult, $SubscribeAttributes } from "./elements";
+import { Context } from "./context";
 
 export default class HtmlEngine {
-  render(content: Content, data?: any): string {
-    return this.recurse(content, data);
-  }
-
-  private recurse(content: Content, data?: any): string {
+  async render(content: Content, context: Context): Promise<string> {
     if (content instanceof Array) {
       let out = "";
       for (let child of content) {
         if (child) {
-          out += this.recurse(child, data);
+          out += await this.render(child, context);
         }
       }
       return out;
     } else if (typeof content == "function") {
-      let updated = (content as ElementFunction)(data);
-      return this.recurse(updated, data);
+      let updated = (content as ElementFunction)(context);
+      return await this.render(updated, context);
     } else if (typeof content == "object") {
       let node = content as BaseElement;
-      if (node.tag == "$subscribe") {
-        return this.recurse(node.content || [], data);
+      if (node.$tag == "$get") {
+        let getAttributes = node.$attributes as $GetAttributes;
+        let result: $GetResult = { loading: false };
+        try {
+          result.data = await getAttributes.from(context);
+        } catch (err) {
+          result.error = err;
+        }        
+        let output = getAttributes.render(result);
+        if (!output) return "";
+        return await this.render(output, context);
       }
-      var tagDefinition = "<" + node.tag;
-      if (node.attributes) {
-        for (let key of Object.keys(node.attributes)) {
-          if (
-            key == "tag" ||
-            key == "$props" ||
-            key == "$on" ||
-            key == "$render"
-          )
-            continue;
-          let attribute = node.attributes[key];
+      if (node.$tag == "$subscribe") {
+        let subscribeAttributes = node.$attributes as $SubscribeAttributes;
+        let innerHTML = await subscribeAttributes.render(context);
+        subscribeAttributes.element.$content = [innerHTML];
+        return await this.render(subscribeAttributes.element, context);
+      }
+      var tagDefinition = "<" + node.$tag;
+      if (node.$attributes) {
+        for (let key of Object.keys(node.$attributes)) {
+          let attribute = node.$attributes[key];
           let value: any;
           if (key.indexOf("on") == 0) {
             value = attribute.toString(); //TODO support scripts
           } else {
             if (typeof attribute == "function") {
-              value = attribute(node.attributes.$props, data);
+              value = attribute(context);
             } else {
               value = attribute;
             }
@@ -56,16 +61,19 @@ export default class HtmlEngine {
               }
               value = styleKeyValuePairs;
             }
+            if (value.$tag) {
+              value = await this.render(value, context);
+            }
             tagDefinition += " " + key + '="' + value + '"';
           }
         }
       }
       tagDefinition += ">";
       let innerHTML = "";
-      if (node.content) {
-        innerHTML = this.recurse(node.content, data);
+      if (node.$content) {
+        innerHTML = await this.render(node.$content, context);
       }
-      return tagDefinition + innerHTML + "</" + node.tag + ">";
+      return tagDefinition + innerHTML + "</" + node.$tag + ">";
     } else {
       return (content || "").toString();
     }

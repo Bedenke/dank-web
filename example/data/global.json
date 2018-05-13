@@ -1,0 +1,10 @@
+{
+  "footer": {
+    "text": "Global footer text"
+  },
+  "links": [
+    { "url": "/global/url1", "label": "Global Link Name 1" },
+    { "url": "/global/url2", "label": "Global Link Name 2" },
+    { "url": "/global/url3", "label": "Global Link Name 3" }
+  ]
+}

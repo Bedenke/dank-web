@@ -1,11 +1,13 @@
-import { $var, footer } from "../../index";
+import { $, footer } from "../../index";
+
+export interface FooterGlobalAttributes {
+  text: string;
+}
 
 export default function Footer() {
   return footer(
     { class: "footer" },
-    $var("About This Footer", {
-      key: "footer.text",
-      path: "global"
-    })
+    //$(context => context.global("footer").text || "Default Footer Text"),
+    $("footer.text", "Default Footer Text")
   );
 }
