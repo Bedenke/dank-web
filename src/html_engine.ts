@@ -1,4 +1,4 @@
-import { $GetAttributes, $GetResult, $SubscribeAttributes } from "./elements";
+import { $GetAttributes, $GetResult, $SubscriptionAttributes } from "./elements";
 import { Context } from "./context";
 
 export default class HtmlEngine {
@@ -27,16 +27,12 @@ export default class HtmlEngine {
         let output = getAttributes.render(result);
         if (!output) return "";
         return await this.render(output, context);
-      }
-      if (node.$tag == "$subscribe") {
-        let subscribeAttributes = node.$attributes as $SubscribeAttributes;
-        let innerHTML = await subscribeAttributes.render(context);
-        subscribeAttributes.element.$content = [innerHTML];
-        return await this.render(subscribeAttributes.element, context);
-      }
-      var tagDefinition = "<" + node.$tag;
+      }      
+      let tagDefinition = "<" + node.$tag;
+      let innerHTML = "";
       if (node.$attributes) {
         for (let key of Object.keys(node.$attributes)) {
+          if (key == "$subscribe") continue;
           let attribute = node.$attributes[key];
           let value: any;
           if (key.indexOf("on") == 0) {
@@ -48,7 +44,7 @@ export default class HtmlEngine {
               value = attribute;
             }
             if (key == "style") {
-              var styleKeyValuePairs = "";
+              let styleKeyValuePairs = "";
               if (typeof value == "object") {
                 Object.keys(value).forEach(function(styleKey) {
                   var dashedKey = styleKey
@@ -67,11 +63,17 @@ export default class HtmlEngine {
             tagDefinition += " " + key + '="' + value + '"';
           }
         }
+
+        if (node.$attributes.$subscribe) {
+          let subscribeAttributes = node.$attributes.$subscribe as $SubscriptionAttributes;
+          let dynamicContent = subscribeAttributes.render(context);
+          innerHTML += await this.render(dynamicContent, context);
+        }
       }
-      tagDefinition += ">";
-      let innerHTML = "";
+      tagDefinition += ">";      
+
       if (node.$content) {
-        innerHTML = await this.render(node.$content, context);
+        innerHTML += await this.render(node.$content, context);
       }
       return tagDefinition + innerHTML + "</" + node.$tag + ">";
     } else {

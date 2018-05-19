@@ -1,4 +1,5 @@
-import { el } from "./elements";
+import { el, $subscribe } from "./elements";
+import { ContextEvents } from "./context";
 
 // HTML elements
 
@@ -8,7 +9,7 @@ export type StringAttribute = string | (() => string) | BaseElement;
 export type NumberAttribute = number | (() => number) | BaseElement;
 
 // These are the global html attributes. If you extend this, your tag will inherit this. If not, make sure you extend only 'Attributes'.
-export interface Attributes {
+export interface Attributes extends ElementAttributes {
   id?: StringAttribute;
   style?: StyleAttribute;
   class?: StringAttribute;
@@ -16,12 +17,12 @@ export interface Attributes {
 }
 
 //<html>
-export function html(...content: Content[]) {
+export function html(attributes?: Attributes | Content, ...content: Content[]) {
   return el("html", undefined, ...content);
 }
 
 //<head>
-export function head(...content: Content[]) {
+export function head(attributes?: Attributes | Content, ...content: Content[]) {
   return el("head", undefined, ...content);
 }
 
@@ -89,6 +90,14 @@ export function h2(attributes?: Attributes | Content, ...content: Content[]) {
 //<h3>
 export function h3(attributes?: Attributes | Content, ...content: Content[]) {
   return el("h3", attributes, ...content);
+}
+
+//<header>
+export function header(
+  attributes?: Attributes | Content,
+  ...content: Content[]
+) {
+  return el("header", attributes, ...content);
 }
 
 //<footer>

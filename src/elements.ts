@@ -1,16 +1,31 @@
 import { Context } from "./context";
 
-export type Trigger = string | string[];
+export type EventTrigger = string | string[];
 
+export interface $SubscriptionAttributes {
+  on: EventTrigger;
+  render: ElementFunction;
+}
 declare global {
-  export interface BaseElement {
+  export class BaseElement {
     $tag: string;
     $attributes?: any;
     $content?: any[];
   }
-  export type Content = string | BaseElement | BaseElement[];
-  export interface ElementAttributes {}
+  export type Content = string | BaseElement | any[] | undefined;
+  export interface ElementAttributes {
+    $subscribe?: $SubscriptionAttributes;
+  }
   export type ElementFunction = (context: Context) => Content;
+}
+
+export function $subscribe(on: EventTrigger, render: ElementFunction): ElementAttributes {
+  return {
+    $subscribe: {
+      on: on,
+      render: render
+    }
+  }
 }
 
 export function el(
@@ -65,7 +80,7 @@ export interface $GetResult {
 
 export interface $GetAttributes {
   from(context: Context): Promise<any>;
-  render(result: $GetResult): Content | undefined;
+  render(result: $GetResult): Content;
 }
 export function $get(attributes: $GetAttributes) {
   return el("$get", attributes);
@@ -82,16 +97,4 @@ export function $(key: string, defaultValue?: any) {
     },
     render: result => result.data
   });
-}
-
-export interface $SubscribeAttributes {
-  element: BaseElement;
-  on: Trigger;
-  render(context: Context): Promise<Content | undefined>;
-}
-export function $subscribe(attributes: $SubscribeAttributes): BaseElement {
-  return {
-    $tag: "$subscribe",
-    $attributes: attributes
-  };
 }

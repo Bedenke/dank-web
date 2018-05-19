@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { HtmlEngine } from "..";
-import website from "../example/pages/website";
 import { Context } from "../src/context";
+import BlogWebsiteExample from "../example/pages/blog_website_example";
   
 const globalData = {
   "footer": {
@@ -18,49 +18,30 @@ const htmlEngine = new HtmlEngine();
 
 describe("Html Engine", () => {
   it("should render html project", async () => {
-    let newsPageContext = new Context({
+    let context = new Context({
       dataDirectory: "example/data/",
-      global: globalData,
-      request: {
-        url: "https://localhost/",
-        path: "/"
-      }
+      global: globalData
     });
 
-    let htmlRender = await htmlEngine.render(website, newsPageContext);
-    
-    console.log("");
-    console.log("Html Render /");
-    console.log(htmlRender);
+    context.browser.go("http://localhost/");
 
-    let awardsPageContext = new Context({
-      dataDirectory: "example/data/",
-      global: globalData,
-      request: {
-        url: "https://localhost/",
-        path: "/awards"
-      }
-    });
+    let htmlRender = await htmlEngine.render(BlogWebsiteExample, context);
+    console.log("Html Render /\n", htmlRender, "\n");
 
-    htmlRender = await htmlEngine.render(website, awardsPageContext);
-    
-    console.log("");
-    console.log("Html Render /awards");
-    console.log(htmlRender);
+    context.browser.go("http://localhost/blog/post-1");
+    htmlRender = await htmlEngine.render(BlogWebsiteExample, context);
+    console.log("Html Render /blog/post-1\n", htmlRender, "\n");
 
-    let notFoundPageContext = new Context({
-      dataDirectory: "example/data/",
-      global: globalData,
-      request: {
-        url: "https://localhost/",
-        path: "/not-found"
-      }
-    });
+    context.browser.go("http://localhost/blog/post-2");
+    htmlRender = await htmlEngine.render(BlogWebsiteExample, context);    
+    console.log("Html Render /blog/post-2\n", htmlRender, "\n");
 
-    htmlRender = await htmlEngine.render(website, notFoundPageContext);
-    
-    console.log("");
-    console.log("Html Render 404");
-    console.log(htmlRender);
+    context.browser.go("http://localhost/blog/not-found");
+    htmlRender = await htmlEngine.render(BlogWebsiteExample, context);    
+    console.log("Html Render /blog/not-found\n", htmlRender, "\n");
+
+    context.browser.go("http://localhost/404");
+    htmlRender = await htmlEngine.render(BlogWebsiteExample, context);
+    console.log("Html Render /404\n", htmlRender, "\n");
   });
 });

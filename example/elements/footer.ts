@@ -7,7 +7,7 @@ export interface FooterGlobalAttributes {
 export default function Footer() {
   return footer(
     { class: "footer" },
-    //$(context => context.global("footer").text || "Default Footer Text"),
+    //$get(context => context.global("footer").text || "Default Footer Text"),
     $("footer.text", "Default Footer Text")
   );
 }

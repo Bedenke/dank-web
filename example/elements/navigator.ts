@@ -9,7 +9,7 @@ export interface NavigatorItemAttributes extends NavigatorItem {
   active: boolean;
 }
 export function NavigatorItemElement(attributes: NavigatorItemAttributes) {
-  return li(a({ href: attributes.url }, attributes.label));
+  return li(attributes.active ? attributes.label : a({ href: attributes.url }, attributes.label));
 }
 
 const defaultLinks = [
@@ -26,7 +26,7 @@ export default function Navigator() {
         return items.map(item => {
           return {
             ...item,
-            active: item.url == context.request().path
+            active: item.url == context.browser.request.pathname
           };
         });
       },
