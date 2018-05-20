@@ -44,11 +44,6 @@ export class RequestContext {
   }
 }
 
-export interface ContextData {
-  dataDirectory: string;
-  global?: any;
-}
-
 export class Browser {
   private context: Context;
   private backHistory: RequestContext[] = [];
@@ -93,8 +88,13 @@ export class Browser {
 
 export type ContextSubscriber = (context: Context) => void;
 
+export interface ContextAttributes {
+  dataDirectory?: string;
+  global?: any;
+}
+
 export class Context {
-  private contextData: ContextData;
+  private attributes: ContextAttributes;
   readonly browser: Browser = new Browser(this);
   private subscribersMap: {
     [event: string]: { [id: string]: ContextSubscriber };
@@ -104,8 +104,8 @@ export class Context {
   private subscriberIds: number = 0;
   private dataCache: { [key: string]: any } = {};
 
-  constructor(contextData: ContextData) {
-    this.contextData = contextData;
+  constructor(attributes: ContextAttributes) {
+    this.attributes = attributes;
   }
 
   emit(...events: string[]) {
@@ -151,7 +151,7 @@ export class Context {
 
   global(key: string) {
     const path = key.split(".");
-    let node = this.contextData.global;
+    let node = this.attributes.global;
     for (let item of path) {
       if (!node) return;
       node = node[item];
@@ -161,15 +161,15 @@ export class Context {
 
   async data(dataPath: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      const filename = path.join(this.contextData.dataDirectory, dataPath);
+      if (!this.attributes.dataDirectory) {
+        return reject(new Error("Data directory not initialized: "+dataPath));
+      }
+      const filename = path.join(this.attributes.dataDirectory, dataPath);
       if (this.dataCache[filename]) {
-        console.log("Loaded file (from cache)", filename);
-        resolve(this.dataCache[filename]);
-        return;
+        return resolve(this.dataCache[filename]);
       }
       fs.readFile(filename, (err, res) => {
         if (err) return reject(err);
-        console.log("Loaded file", filename);
         const data = JSON.parse(res.toString());
         this.dataCache[filename] = data;
         resolve(data);
