@@ -43,5 +43,10 @@ describe("Html Engine", () => {
     context.browser.go("http://localhost/404");
     htmlRender = await htmlEngine.render(BlogWebsiteExample, context);
     console.log("Html Render /404\n", htmlRender, "\n");
+
+    context.browser.go("http://localhost/api");
+    htmlRender = await htmlEngine.render(BlogWebsiteExample, context);
+    console.log("Html Render /api\n", htmlRender, "\n");
+
   });
 });

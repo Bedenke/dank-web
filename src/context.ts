@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import superagent from "superagent";
+import superagent, { Request } from "superagent";
 import URL from "url-parse";
 
 export enum ContextEvents {
@@ -175,5 +175,21 @@ export class Context {
         resolve(data);
       });
     });
+  }
+
+  get(url: string): Request {
+    return superagent.get(url);
+  }
+
+  post(url: string): Request {
+    return superagent.post(url);
+  }
+
+  put(url: string): Request {
+    return superagent.put(url);
+  }
+
+  delete(url: string): Request {
+    return superagent.delete(url);
   }
 }

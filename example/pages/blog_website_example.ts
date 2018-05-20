@@ -1,13 +1,18 @@
 import { website, div } from "../..";
 import IndexPage from "./blog_index_page";
-import BlogPage from "./blog_page";
+import BlogApiPage from "./blog_api_page";
+import BlogPostPage from "./blog_post_page";
 
 export default website({
   routes: [
     { path: "/", render: context => IndexPage() },
     {
-      path: "/blog/:slug",
-      render: context => BlogPage({ slug: context.browser.request.params.slug })
+      path: "/blog/:id",
+      render: context => BlogPostPage({ id: context.browser.request.params.id })
+    },
+    {
+      path: "/api",
+      render: context => BlogApiPage()
     }
   ],
   renderNotFound: context => {

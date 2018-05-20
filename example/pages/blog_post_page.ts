@@ -6,18 +6,18 @@ import Header from "../elements/header";
 import { PostView, PostAttributes } from "../elements/post";
 
 export interface BlogPageAttributes {
-  slug?: string;
+  id?: string;
 }
-export default function BlogPage(attributes: BlogPageAttributes) {
+export default function BlogPostPage(attributes: BlogPageAttributes) {
   return div(
     { class: "blog-page" },
     Navigator(),
     $get({
       from: async context => {
-        if (!attributes.slug) return;
+        if (!attributes.id) return;
         const data = await context.data("posts.json");
         const posts = data.posts as PostAttributes[];
-        const post = posts.filter(post => post.slug == attributes.slug)[0];
+        const post = posts.filter(post => post.id == attributes.id)[0];
         return post;
       },
       render: result => {
