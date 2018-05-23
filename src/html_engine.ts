@@ -18,7 +18,7 @@ export default class HtmlEngine {
       let node = content as BaseElement;
       if (node.$tag == "$get") {
         let getAttributes = node.$attributes as $GetAttributes;
-        let result: $GetResult = { loading: false };
+        let result: $GetResult = { loading: false, context: context };
         try {
           result.data = await getAttributes.from(context);
         } catch (err) {

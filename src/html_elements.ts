@@ -1,12 +1,12 @@
 import { el, $subscribe } from "./elements";
-import { ContextEvents } from "./context";
+import { ContextEvents, Context } from "./context";
 
 // HTML elements
 
-export type AnyAttribute = any | (() => any);
-export type StyleAttribute = string | (() => string) | object | (() => object);
-export type StringAttribute = string | (() => string) | BaseElement;
-export type NumberAttribute = number | (() => number) | BaseElement;
+export type AnyAttribute = any | ((context: Context) => any);
+export type StyleAttribute = string | ((context: Context) => string) | object | (() => object);
+export type StringAttribute = string | ((context: Context) => string) | BaseElement;
+export type NumberAttribute = number | ((context: Context) => number) | BaseElement;
 
 // These are the global html attributes. If you extend this, your tag will inherit this. If not, make sure you extend only 'Attributes'.
 export interface Attributes extends ElementAttributes {
@@ -110,9 +110,6 @@ export function footer(
 
 //<style>
 export function style(content: StyleAttribute) {
-  if (typeof content == "function") {
-    content = content();
-  }
   return el("style", undefined, content);
 }
 

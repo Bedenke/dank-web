@@ -74,6 +74,7 @@ export interface $FormAttributes {
 
 export interface $GetResult {
   loading: boolean;
+  context: Context;
   data?: any;
   error?: Error;
 }
@@ -86,15 +87,11 @@ export function $get(attributes: $GetAttributes) {
   return el("$get", attributes);
 }
 
-export function $(key: string, defaultValue?: any) {
+export type DataRenderer<T> = (data: T, context: Context) => Content;
+
+export function $<T>(key: string, defaultValue?: T, render?: DataRenderer<T>) {
   return $get({
-    from: context => {
-      let value = context.global(key) || defaultValue;
-      if (value == undefined) {
-        console.warn("🔥 Global value is not defined for", key);
-      }
-      return value;
-    },
-    render: result => result.data
+    from: context => context.global(key) || defaultValue || "${"+key+"}",
+    render: result => render ? render(result.data, result.context) : result.data
   });
 }
