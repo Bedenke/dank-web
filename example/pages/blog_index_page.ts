@@ -4,6 +4,7 @@ import Navigator from "../elements/navigator";
 import Blog from "../elements/blog";
 import Header from "../elements/header";
 import { PostAttributes, PostLink } from "../elements/post";
+import Fetch from "../../src/fetch";
 
 export default function IndexPage() {
   return div(
@@ -13,7 +14,7 @@ export default function IndexPage() {
     h1("Here are the posts"),
     $get({
       from: async context => {
-        let data = await context.data("posts.json");
+        let data = context.get("data")
         let posts = data.posts as PostAttributes[];
         let query = context.browser.request.query;
         let page = parseInt(query.page || "0");

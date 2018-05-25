@@ -1,7 +1,5 @@
-import fs from "fs";
-import path from "path";
-import superagent, { Request } from "superagent";
 import URL from "url-parse";
+import { EventTrigger } from "..";
 
 export enum ContextEvents {
   Request = "Context.Request",
@@ -88,13 +86,8 @@ export class Browser {
 
 export type ContextSubscriber = (context: Context) => void;
 
-export interface ContextAttributes {
-  dataDirectory?: string;
-  global?: any;
-}
-
 export class Context {
-  private attributes: ContextAttributes;
+  private data: any;
   readonly browser: Browser = new Browser(this);
   private subscribersMap: {
     [event: string]: { [id: string]: ContextSubscriber };
@@ -102,10 +95,9 @@ export class Context {
   private unsubscribed: { [id: string]: boolean } = {};
   private emitTimeout: any;
   private subscriberIds: number = 0;
-  private dataCache: { [key: string]: any } = {};
 
-  constructor(attributes: ContextAttributes) {
-    this.attributes = attributes;
+  constructor(data: any) {
+    this.data = data;
   }
 
   emit(...events: string[]) {
@@ -136,8 +128,9 @@ export class Context {
     }, 0);
   }
 
-  subscribe(subscriber: ContextSubscriber, ...events: string[]): number {
+  subscribe(subscriber: ContextSubscriber, events: EventTrigger): number {
     const id = this.subscriberIds++;
+    if (typeof events == "string") events = [events];
     for (const event of events) {
       this.subscribersMap[event] = this.subscribersMap[event] || {};
       this.subscribersMap[event][id] = subscriber;
@@ -149,47 +142,13 @@ export class Context {
     this.unsubscribed[subscriberId] = true;
   }
 
-  global(key: string) {
+  get(key: string) {
     const path = key.split(".");
-    let node = this.attributes.global;
+    let node = this.data;
     for (let item of path) {
       if (!node) return;
       node = node[item];
     }
     return node;
-  }
-
-  async data(dataPath: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (!this.attributes.dataDirectory) {
-        return reject(new Error("Data directory not initialized: "+dataPath));
-      }
-      const filename = path.join(this.attributes.dataDirectory, dataPath);
-      if (this.dataCache[filename]) {
-        return resolve(this.dataCache[filename]);
-      }
-      fs.readFile(filename, (err, res) => {
-        if (err) return reject(err);
-        const data = JSON.parse(res.toString());
-        this.dataCache[filename] = data;
-        resolve(data);
-      });
-    });
-  }
-
-  get(url: string): Request {
-    return superagent.get(url);
-  }
-
-  post(url: string): Request {
-    return superagent.post(url);
-  }
-
-  put(url: string): Request {
-    return superagent.put(url);
-  }
-
-  delete(url: string): Request {
-    return superagent.delete(url);
   }
 }

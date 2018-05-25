@@ -4,6 +4,7 @@ import Navigator from "../elements/navigator";
 import Blog from "../elements/blog";
 import Header from "../elements/header";
 import { PostAttributes, PostLink } from "../elements/post";
+import Fetch from "../../src/fetch";
 
 export default function BlogApiPage() {
   return div(
@@ -13,7 +14,7 @@ export default function BlogApiPage() {
     h1("Here are the posts"),
     $get({
       from: async context => {
-        let response = await context.get("https://jsonplaceholder.typicode.com/posts");
+        let response = await Fetch.get("https://jsonplaceholder.typicode.com/posts");
         let posts = response.body as PostAttributes[];
         return posts;
       },

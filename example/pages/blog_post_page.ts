@@ -15,7 +15,7 @@ export default function BlogPostPage(attributes: BlogPageAttributes) {
     $get({
       from: async context => {
         if (!attributes.id) return;
-        const data = await context.data("posts.json");
+        const data = context.get("posts");
         const posts = data.posts as PostAttributes[];
         const post = posts.filter(post => post.id == attributes.id)[0];
         return post;

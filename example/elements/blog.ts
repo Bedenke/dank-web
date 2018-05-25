@@ -10,8 +10,7 @@ export default function Blog(attributes: BlogAttributes) {
 
     $get({
       from: async context => {
-        let data = await context.data(attributes.source);
-        let posts = data.posts as PostAttributes[];
+        let posts = context.get("posts") as PostAttributes[];
         let query = context.browser.request.query;
         let page = parseInt(query.page || "0");
         return posts.filter((post, idx) => idx >= page);

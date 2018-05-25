@@ -18,12 +18,12 @@ export interface Attributes extends ElementAttributes {
 
 //<html>
 export function html(attributes?: Attributes | Content, ...content: Content[]) {
-  return el("html", undefined, ...content);
+  return el("html", attributes, ...content);
 }
 
 //<head>
 export function head(attributes?: Attributes | Content, ...content: Content[]) {
-  return el("head", undefined, ...content);
+  return el("head", attributes, ...content);
 }
 
 //<title>

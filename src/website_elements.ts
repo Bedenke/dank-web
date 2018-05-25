@@ -16,10 +16,10 @@ export interface WebSiteAttributes {
 export function website(attributes: WebSiteAttributes) {
   return html(
     head(
-      $subscribe(ContextEvents.Head, context => {
+      $subscribe([ContextEvents.Request, ContextEvents.Head], context => {
         return [
           title(context.browser.title), 
-          attributes.renderHeadElements ? attributes.renderHeadElements(context) : null
+          attributes.renderHeadElements ? attributes.renderHeadElements(context) : undefined
         ];
       })
     ),
