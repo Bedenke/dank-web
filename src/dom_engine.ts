@@ -22,7 +22,10 @@ export default class DomEngine {
       await this.render(element, updated, context);
     } else if (typeof content == "object") {
       let node = content as BaseElement;
+      
       if (node.$tag == "$get") {
+        console.log("content is $get", node);
+
         let getAttributes = node.$attributes as $GetAttributes;
         let result: $GetResult = { loading: false, context: context };
         try {
@@ -37,10 +40,12 @@ export default class DomEngine {
         return;
       }
 
+      console.log("content is element", node.$tag);
+
       let newElement = document.createElement(node.$tag);
       element.appendChild(newElement);
 
-      if (node.$attributes) {
+      if (node.$attributes) {  
         for (let key of Object.keys(node.$attributes)) {
           let attribute = node.$attributes[key];
           if (key == "$subscribe") {
@@ -72,10 +77,15 @@ export default class DomEngine {
             newElement.setAttribute(key, value);
           }
         }
-        if (node.$content) this.render(newElement, node.$content, context);
-      } else {
-        element.innerHTML = content.toString();
       }
+      
+      if (node.$content) {
+        await this.render(newElement, node.$content, context);
+      }
+    } else if (content) {
+      console.log("content is value", content);
+      element.innerHTML = content.toString();
     }
+
   }
 }

@@ -8,29 +8,28 @@ export interface PageElement {
   render: ElementFunction;
 }
 
+export type RenderBodyFunction = (children: Content, context: Context) => Content;
+
 export interface WebSiteAttributes {
   routes: PageElement[];
-  renderHeadElements?: ElementFunction;
+  renderHead: ElementFunction;
+  renderBody: RenderBodyFunction;
   renderNotFound: ElementFunction;
 }
 export function website(attributes: WebSiteAttributes) {
   return html(
     head(
-      $subscribe([ContextEvents.Request, ContextEvents.Head], context => {
-        return [
-          title(context.browser.title), 
-          attributes.renderHeadElements ? attributes.renderHeadElements(context) : undefined
-        ];
-      })
+      $subscribe([ContextEvents.Request, ContextEvents.Head], attributes.renderHead)
     ),
     body(
-      $subscribe(ContextEvents.Request, context => {
+        $subscribe(ContextEvents.Request, context => {
         for (let route of attributes.routes) {
           let routeParser = new RouteParser(route.path);
           let params = routeParser.match(context.browser.request.pathname);
           if (params) {
             context.browser.request.params = params;
-            return route.render(context);
+            const children = route.render(context);
+            return attributes.renderBody(children, context);
           }
         }
         return attributes.renderNotFound(context);
