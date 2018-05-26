@@ -40,8 +40,6 @@ export default class DomEngine {
         return;
       }
 
-      console.log("content is element", node.$tag);
-
       let newElement = document.createElement(node.$tag);
       element.appendChild(newElement);
 
@@ -78,12 +76,11 @@ export default class DomEngine {
           }
         }
       }
-      
+
       if (node.$content) {
         await this.render(newElement, node.$content, context);
       }
     } else if (content) {
-      console.log("content is value", content);
       element.innerHTML = content.toString();
     }
 
