@@ -19,13 +19,16 @@ declare global {
   export type ElementFunction = (context: Context) => Content;
 }
 
-export function $subscribe(on: EventTrigger, render: ElementFunction): ElementAttributes {
+export function $subscribe(
+  on: EventTrigger,
+  render: ElementFunction
+): ElementAttributes {
   return {
     $subscribe: {
       on: on,
       render: render
     }
-  }
+  };
 }
 
 export function el(
@@ -33,7 +36,10 @@ export function el(
   attributesOrContent?: any,
   ...content: any[]
 ): BaseElement {
-  if (typeof attributesOrContent == "object") {
+  if (
+    typeof attributesOrContent == "object" &&
+    !(attributesOrContent instanceof Array)
+  ) {
     if (attributesOrContent.$tag == undefined) {
       // Is attribute
       return {
@@ -91,7 +97,8 @@ export type DataRenderer<T> = (data: T, context: Context) => Content;
 
 export function $<T>(key: string, defaultValue?: T, render?: DataRenderer<T>) {
   return $get({
-    from: context => context.get(key) || defaultValue || "${"+key+"}",
-    render: result => render ? render(result.data, result.context) : result.data
+    from: context => context.get(key) || defaultValue || "${" + key + "}",
+    render: result =>
+      render ? render(result.data, result.context) : result.data
   });
 }

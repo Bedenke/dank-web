@@ -138,6 +138,22 @@ export function input(attributes?: InputAttributes) {
   return el("input", attributes);
 }
 
+//<select>
+export function select(attributes?: Attributes | Content, ...content: Content[]) {
+  return el("select", attributes, ...content);
+}
+
+//<option>
+export interface OptionAttributes {
+  disabled?: boolean
+  label?: StringAttribute;
+  selected?: boolean;
+  value?: StringAttribute;
+}
+export function option(attributes?: OptionAttributes) {
+  return el("option", attributes);
+}
+
 //<textarea>
 export interface TextAreaAttributes extends Attributes {
   cols?: NumberAttribute;
@@ -148,6 +164,14 @@ export function textarea(
   ...content: BaseElement[]
 ) {
   return el("textarea", attributes, ...content);
+}
+
+//<option>
+export interface LabelAttributes {
+  for?: StringAttribute;
+}
+export function label(attributes?: LabelAttributes, content?: string) {
+  return el("label", attributes, content);
 }
 
 //<a>

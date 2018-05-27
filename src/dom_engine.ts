@@ -24,8 +24,6 @@ export default class DomEngine {
       let node = content as BaseElement;
       
       if (node.$tag == "$get") {
-        console.log("content is $get", node);
-
         let getAttributes = node.$attributes as $GetAttributes;
         let result: $GetResult = { loading: false, context: context };
         try {
@@ -48,14 +46,12 @@ export default class DomEngine {
           let attribute = node.$attributes[key];
           if (key == "$subscribe") {
             let subscriptionAttributes = attribute as $SubscriptionAttributes;
-            if (!newElement.getAttribute("subscriptionId")) {
-              const subscriptionId = context.subscribe(c => {
-                const newContent = subscriptionAttributes.render(c);
-                newElement.innerHTML = "";
-                this.render(newElement, newContent, context);
-              }, subscriptionAttributes.on);
-              newElement.setAttribute("$subscriptionId", "" + subscriptionId);
-            }
+            const subscriptionId = context.subscribe(async c => {
+              const newContent = await subscriptionAttributes.render(c);
+              await this.render(newElement, newContent, context);
+            }, subscriptionAttributes.on);            
+            const newContent = subscriptionAttributes.render(context);
+            await this.render(newElement, newContent, context);
             continue;
           }
 
@@ -68,11 +64,15 @@ export default class DomEngine {
             } else {
               value = attribute;
             }
+            if (value == undefined) continue;
             if (value.$tag) {
               value = await this.render(newElement, value, context);
             }
-
-            newElement.setAttribute(key, value);
+            try {
+              newElement.setAttribute(key, value);
+            } catch (err) {
+              console.error("Invalid attribute name", key, value, node);              
+            }
           }
         }
       }
