@@ -4,16 +4,31 @@ import { ContextEvents, Context } from "./context";
 // HTML elements
 
 export type AnyAttribute = any | ((context: Context) => any);
-export type StyleAttribute = string | ((context: Context) => string) | object | (() => object);
-export type StringAttribute = string | ((context: Context) => string) | BaseElement;
-export type NumberAttribute = number | ((context: Context) => number) | BaseElement;
+export type StyleAttribute =
+  | string
+  | ((context: Context) => string)
+  | object
+  | (() => object);
+export type StringAttribute =
+  | string
+  | ((context: Context) => string)
+  | BaseElement;
+export type NumberAttribute =
+  | number
+  | ((context: Context) => number)
+  | BaseElement;
+
+export interface EventAttributes {
+  nativeEvent: Event;
+  context: Context;
+}
 
 // These are the global html attributes. If you extend this, your tag will inherit this. If not, make sure you extend only 'Attributes'.
 export interface Attributes extends ElementAttributes {
   id?: StringAttribute;
   style?: StyleAttribute;
   class?: StringAttribute;
-  onclick?(e: any): boolean;
+  onclick?(e: EventAttributes): boolean;
 }
 
 //<html>
@@ -128,24 +143,54 @@ export function p(attributes?: Attributes | Content, ...content: Content[]) {
   return el("p", attributes, ...content);
 }
 
+//<form>
+export interface FormAttributes extends Attributes {
+  "accept-charset"?: StringAttribute;
+  action?: StringAttribute;
+  autocomplete?: StringAttribute;
+  enctype?: StringAttribute;
+  metho?: StringAttribute;
+  name?: StringAttribute;
+  novalidate?: StringAttribute;
+  target?: StringAttribute;
+  onsubmit?: (event: EventAttributes) => void;
+}
+export function form(
+  attributes?: FormAttributes | Content,
+  ...content: Content[]
+) {
+  return el("form", attributes, ...content);
+}
+
 //<input>
 export interface InputAttributes extends Attributes {
-  type: "text" | "email" | "phone" | "password" | "submit" | "button";
-  value: string;
-  onsubmit?: (event: any) => void;
+  type?: "text" | "email" | "phone" | "password" | "submit" | "button";
+  value?: string;
 }
 export function input(attributes?: InputAttributes) {
   return el("input", attributes);
 }
 
 //<select>
-export function select(attributes?: Attributes | Content, ...content: Content[]) {
+export interface SelectAttributes extends Attributes {
+  autofocus?: boolean;
+  disabled?: boolean;
+  form?: StringAttribute;
+  multiple?: boolean;
+  name?: StringAttribute;
+  required?: boolean;
+  size?: NumberAttribute;
+}
+export function select(
+  attributes?: SelectAttributes | Content,
+  ...content: Content[]
+) {
   return el("select", attributes, ...content);
 }
 
 //<option>
 export interface OptionAttributes {
-  disabled?: boolean
+  disabled?: boolean;
   label?: StringAttribute;
   selected?: boolean;
   value?: StringAttribute;

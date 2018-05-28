@@ -57,7 +57,10 @@ export default class DomEngine {
 
           let value: any;
           if (key.indexOf("on") == 0) {
-            (newElement as any)[key] = attribute;
+            (newElement as any)[key] = (e: Event) => {
+              console.log("EVENT 2", e, context);              
+              return attribute({nativeEvent: e, context: context})
+            };
           } else {
             if (typeof attribute == "function") {
               value = attribute(context);
