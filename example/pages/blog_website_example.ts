@@ -15,6 +15,12 @@ export default website({
       render: context => BlogApiPage()
     }
   ],
+  renderHead: context => {
+    return []
+  },
+  renderBody: (children, context) => {
+    return children
+  },
   renderNotFound: context => {
     return div({class:"not-found-page"}, "PAGE NOT FOUND: " + context.browser.request.url);
   }
