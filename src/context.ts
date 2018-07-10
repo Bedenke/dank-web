@@ -1,5 +1,4 @@
 import URL from "url-parse";
-import { EventTrigger } from "..";
 
 export enum ContextEvents {
   Request = "Context.Request",

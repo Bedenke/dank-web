@@ -1,10 +1,8 @@
-import { h1, div, $get, ul, li } from "../..";
+import { h1, div, $get, ul, li } from "../../index";
 import Footer from "../elements/Footer";
 import Navigator from "../elements/navigator";
-import Blog from "../elements/blog";
 import Header from "../elements/header";
 import { PostAttributes, PostLink } from "../elements/post";
-import Fetch from "../../src/fetch";
 
 export default function IndexPage() {
   return div(

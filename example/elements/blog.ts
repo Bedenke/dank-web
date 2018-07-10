@@ -1,4 +1,4 @@
-import { $get, div, h1, li, ul } from "../../index";
+import { $get, div, li, ul } from "../..";
 import { PostLink, PostAttributes } from "./post";
 
 export interface BlogAttributes {

@@ -1,4 +1,4 @@
-import { div, h1, a } from "../../index";
+import { div, h1, a } from "../..";
 
 export interface PostAttributes {
   id: string;

@@ -1,7 +1,6 @@
-import { h1, div, $get } from "../..";
+import { h1, div, $get } from "../../index";
 import Footer from "../elements/Footer";
 import Navigator from "../elements/navigator";
-import Blog from "../elements/blog";
 import Header from "../elements/header";
 import { PostView, PostAttributes } from "../elements/post";
 

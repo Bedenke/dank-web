@@ -1,5 +1,5 @@
-import { el, $subscribe } from "./elements";
-import { ContextEvents, Context } from "./context";
+import { el } from "./elements";
+import { Context } from "./context";
 
 // HTML elements
 
@@ -360,3 +360,4 @@ export function polygon(
 ) {
   return el("polygon", attributes, ...content);
 }
+

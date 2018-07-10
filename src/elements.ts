@@ -1,12 +1,12 @@
 import { Context } from "./context";
 
-export type EventTrigger = string | string[];
-
 export interface $SubscriptionAttributes {
   on: EventTrigger;
   render: ElementFunction;
 }
 declare global {
+  export type EventTrigger = string | string[];
+
   export class BaseElement {
     $tag: string;
     $attributes?: any;

@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { HtmlEngine } from "..";
-import { Context } from "../src/context";
+import { Context } from "..";
 import BlogWebsiteExample from "../example/pages/blog_website_example";
   
 const globalData = {

@@ -1,4 +1,4 @@
-import { ul, li, a, $ } from "../../index";
+import { ul, li, a, $ } from "../..";
 
 export interface NavigatorItem {
   url: string;

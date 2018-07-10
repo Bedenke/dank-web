@@ -1,4 +1,4 @@
-import { $, footer } from "../../index";
+import { $, footer } from "../..";
 
 export interface FooterGlobalAttributes {
   text: string;
