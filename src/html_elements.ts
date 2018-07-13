@@ -164,6 +164,8 @@ export function form(
 
 //<input>
 export interface InputAttributes extends Attributes {
+  name?: string;
+  placeholder?: string;
   type?: "text" | "email" | "phone" | "password" | "submit" | "button";
   value?: string;
 }

@@ -48,6 +48,7 @@ export default class DomEngine {
             let subscriptionAttributes = attribute as $SubscriptionAttributes;
             const subscriptionId = context.subscribe(async c => {
               const newContent = await subscriptionAttributes.render(c);
+              newElement.innerHTML = "";
               await this.render(newElement, newContent, context);
             }, subscriptionAttributes.on);            
             const newContent = subscriptionAttributes.render(context);
@@ -58,7 +59,6 @@ export default class DomEngine {
           let value: any;
           if (key.indexOf("on") == 0) {
             (newElement as any)[key] = (e: Event) => {
-              console.log("EVENT 2", e, context);              
               return attribute({nativeEvent: e, context: context})
             };
           } else {

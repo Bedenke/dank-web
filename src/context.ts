@@ -86,6 +86,7 @@ export class Browser {
 export type ContextSubscriber = (context: Context) => void;
 
 export class Context {
+  actions: any;
   private data: any;
   readonly browser: Browser = new Browser(this);
   private subscribersMap: {
@@ -141,13 +142,13 @@ export class Context {
     this.unsubscribed[subscriberId] = true;
   }
 
-  get(key: string) {
+  get<T>(key: string): T | undefined {
     const path = key.split(".");
     let node = this.data;
     for (let item of path) {
       if (!node) return;
       node = node[item];
     }
-    return node;
+    return node as T;
   }
 }

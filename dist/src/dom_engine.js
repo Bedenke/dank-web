@@ -48,6 +48,7 @@ class DomEngine {
                             let subscriptionAttributes = attribute;
                             const subscriptionId = context.subscribe((c) => __awaiter(this, void 0, void 0, function* () {
                                 const newContent = yield subscriptionAttributes.render(c);
+                                newElement.innerHTML = "";
                                 yield this.render(newElement, newContent, context);
                             }), subscriptionAttributes.on);
                             const newContent = subscriptionAttributes.render(context);
@@ -57,7 +58,6 @@ class DomEngine {
                         let value;
                         if (key.indexOf("on") == 0) {
                             newElement[key] = (e) => {
-                                console.log("EVENT 2", e, context);
                                 return attribute({ nativeEvent: e, context: context });
                             };
                         }

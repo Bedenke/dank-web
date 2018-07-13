@@ -97,7 +97,7 @@ export type DataRenderer<T> = (data: T, context: Context) => Content;
 
 export function $<T>(key: string, defaultValue?: T, render?: DataRenderer<T>) {
   return $get({
-    from: context => context.get(key) || defaultValue || "${" + key + "}",
+    from: context => context.get<any>(key) || defaultValue || "${" + key + "}",
     render: result =>
       render ? render(result.data, result.context) : result.data
   });

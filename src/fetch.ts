@@ -1,5 +1,4 @@
 import fs from "fs";
-import path from "path";
 import superagent, { Request } from "superagent";
 
 export default class Fetch {
